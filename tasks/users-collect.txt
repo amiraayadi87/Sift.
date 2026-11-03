@@ -1,0 +1,25 @@
+Other users (the hourly check)
+
+Sift has other users besides the owner. Only the owner's account can start tasks, so when another user presses Collect, Shortlist or Tailor CVs in the app, the app leaves a request in that user's own space, and this hourly check picks it up. Everything here uses only that user's own data, under u/<user id>/ in the app's database (the same app url). Privacy: never mix two users' data, never copy a user's data outside u/<their id>/, never write a user's jobs to the owner's sheet or any Google Sheet (the app keeps each user's own sheet), never use the owner's Drive or Claude in Chrome (her own signed-in browser) for a user, and never put names, CV text or answers in push notifications, the final reply or the improvement note (say "user 1", "user 2").
+
+Daily limits per user (they keep the owner's costs predictable): 1 collection, 8 jobs reviewed and 2 CVs per UK day. The counts live in u/<id>/config/daily as {"date": "YYYY-MM-DD" (UK), "collects": n, "reviewed": n, "cvs": n}; a different date means all counts are 0.
+
+H1. Find requests. ArtifactData "list" collection "u" (query limit 200); each document id is a user id. For each, ArtifactData "get" collection "u/<id>/config", doc_id "request". Keep the users that have one, oldest "at" first, at most 5. If none, end now: reply "No requests" and skip everything else, including the self-improvement note.
+
+H2. For each request (step = its "step", run id = its "runId"):
+ - Read u/<id>/config/daily. If the step's limit for today is reached, "delete" the request and go to the next user.
+ - "delete" the request (if_version = its version), then "set" u/<id>/config/running to {"step": <step>, "runId": <run id>, "startedAt": <now, UTC ISO time>, "roles": []}.
+ - step "shortlist": Claude Code Remote fire_trigger, trigger_id "<SHORTLIST_TASK_ID>", text "For: <id>. Run id: <run id>". Next user.
+ - step "cvs": fire_trigger, trigger_id "<CV_TASK_ID>", text "For: <id>. Run id: <run id>". Next user.
+ - step "collect": collect for this user as in H3, then the next user.
+
+H3. Collect for user <id>: do steps A to E above with these changes.
+ - Work in /tmp/na/<id> (create it; the engine from A1 can be copied there).
+ - B1: settings and facts come from ArtifactData "list" collections "u/<id>/search" and "u/<id>/me" (out_dir /tmp/na/<id>/db). The user's jobs come from ArtifactData "list" collection "u/<id>/feed" (query limit 1000, out_dir /tmp/na/<id>/db/feed), not from any sheet. Skip B2 entirely (Adzuna and All jobs are the owner's).
+ - C1: add --user: python3 -I na_engine.py na-plan --user --search db/search --me db/me --out plan.json (it keeps users to company career sites and LinkedIn, about $0.15).
+ - D1: python3 -I na_engine.py na-build --search db/search --me db/me --feed db/feed --raw raw --out out --collection "u/<id>/feed". Skip D2 and D4 (no sheet). D3 as written: its batches go to the user's feed.
+ - Progress points go to collection "u/<id>/progress"; the Stop check reads collection "u/<id>/config", doc_id "running"; the run log (E1) goes to collection "u/<id>/runs".
+ - After E2, "set" u/<id>/config/daily with today's UK date and collects + 1 (keep the other counts).
+ - E3: if any jobs were added, take a new run id, "set" u/<id>/config/running to {"step": "shortlist", "runId": <new run id>, "startedAt": <new run id>, "roles": []} and fire_trigger "<SHORTLIST_TASK_ID>" with text "For: <id>. Run id: <new run id>". Otherwise "delete" u/<id>/config/running if its runId is this run's.
+ - No push notifications for a user's run, except one "Sift collect error: database" if the database can't be written at all.
+ - E4 and F once per hourly check, covering all users as "user 1", "user 2"; F's prefix is "Sift users collect note: ".

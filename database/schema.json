@@ -1,0 +1,154 @@
+{
+  "Search": {
+    "collection": "search",
+    "key": "setting",
+    "columns": [
+      [
+        "Setting",
+        "setting"
+      ],
+      [
+        "Value",
+        "value"
+      ],
+      [
+        "What it does",
+        "help"
+      ]
+    ]
+  },
+  "Me": {
+    "collection": "me",
+    "key": "fact",
+    "columns": [
+      [
+        "Fact",
+        "fact"
+      ],
+      [
+        "Value",
+        "value"
+      ],
+      [
+        "Used for",
+        "usedFor"
+      ]
+    ]
+  },
+  "Feed": {
+    "collection": "feed",
+    "key": "jobId",
+    "columns": [
+      [
+        "Date found",
+        "dateFound"
+      ],
+      [
+        "Source",
+        "source"
+      ],
+      [
+        "Job title",
+        "title"
+      ],
+      [
+        "Company",
+        "company"
+      ],
+      [
+        "Location",
+        "location"
+      ],
+      [
+        "Salary",
+        "salary"
+      ],
+      [
+        "Link",
+        "link"
+      ],
+      [
+        "Facts",
+        "facts"
+      ],
+      [
+        "Role searched",
+        "role"
+      ],
+      [
+        "Decision",
+        "decision"
+      ],
+      [
+        "Reason",
+        "reason"
+      ],
+      [
+        "Requirements",
+        "requirements"
+      ],
+      [
+        "CV",
+        "cv"
+      ],
+      [
+        "CV score",
+        "cvScore"
+      ],
+      [
+        "Status",
+        "status"
+      ],
+      [
+        "Note",
+        "note"
+      ],
+      [
+        "Date applied",
+        "dateApplied"
+      ],
+      [
+        "Posted",
+        "posted"
+      ],
+      [
+        "Job ID",
+        "jobId"
+      ]
+    ]
+  },
+  "Runs": {
+    "collection": "runs",
+    "key": null,
+    "columns": [
+      [
+        "When",
+        "when"
+      ],
+      [
+        "Step",
+        "step"
+      ],
+      [
+        "Summary",
+        "summary"
+      ],
+      [
+        "Problems",
+        "problems"
+      ]
+    ]
+  },
+  "app_only": {
+    "about/me": {
+      "text": "About me doc written from the CV (facts for CVs)",
+      "fitRules": "fit rules written from the CV and welcome answers",
+      "learned": "[{q, a, rule, job, at}] rules learned from Ask me answers",
+      "cvName": "uploaded CV file name",
+      "cvText": "text read from the CV",
+      "cvUpdatedAt": "ISO time",
+      "updatedAt": "ISO time"
+    },
+    "note": "Other users keep the same collections under u/<their id>/ (search, me, feed, about)."
+  }
+}

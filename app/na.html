@@ -1,0 +1,1309 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sift</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Sift — a job seeker's daily desk.
+   One memorable thing: the search is a sentence ("I'm looking for …") set large, roles underlined in marigold.
+   Everything else is quiet: one typeface, a sage paper, a forest green for actions, statuses as small coloured marks. */
+:root{
+  --bg:#fbfcfa; --surface:#ffffff; --sunk:#f3f6f3; --line:#e4e9e3; --line2:#eef1ed;
+  --ink:#26302c; --ink2:#55615b; --muted:#77817c;
+  --accent:#2f7d5b; --accent-ink:#ffffff; --accent-soft:#e6f4ec; --accent-line:#c9e5d5; --accent-strong:#1f6146; --hi:#f5c84c; --hi-soft:#fef7df;
+  --go:#2f8a5c; --go-soft:#e9f6ef; --ask:#946510; --ask-soft:#fef7df; --check:#56789a; --check-soft:#edf2f8;
+  --no:#9a9494; --no-soft:#f4f3f3; --bad:#c0392b; --bad-soft:#fdeeec;
+  --font:"Inter","Segoe UI",system-ui,sans-serif;
+  --shadow:0 1px 2px rgba(38,48,44,.04),0 4px 14px rgba(38,48,44,.04);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --surface:#19211d; --sunk:#1f2924; --line:#2c3732; --line2:#25302b;
+  --ink:#e8eee9; --ink2:#bcc6c0; --muted:#8d9892;
+  --accent:#7fc8a4; --accent-ink:#0d1f17; --accent-soft:#1e3329; --accent-line:#2f4c3e; --accent-strong:#a3dcbf; --hi:#f5c542; --hi-soft:#3a2f10;
+  --go:#7fc8a4; --go-soft:#1b3228; --ask:#f5c542; --ask-soft:#3a2f10; --check:#9cb8d6; --check-soft:#1f2a36;
+  --no:#8d9892; --no-soft:#232b27; --bad:#ff8a80; --bad-soft:#3a1916;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#19211d; --sunk:#1f2924; --line:#2c3732; --line2:#25302b;
+  --ink:#e8eee9; --ink2:#bcc6c0; --muted:#8d9892;
+  --accent:#7fc8a4; --accent-ink:#0d1f17; --accent-soft:#1e3329; --accent-line:#2f4c3e; --accent-strong:#a3dcbf; --hi:#f5c542; --hi-soft:#3a2f10;
+  --go:#7fc8a4; --go-soft:#1b3228; --ask:#f5c542; --ask-soft:#3a2f10; --check:#9cb8d6; --check-soft:#1f2a36;
+  --no:#8d9892; --no-soft:#232b27; --bad:#ff8a80; --bad-soft:#3a1916;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.tabs .n,.rb-total,.activity li .t,.score,.today{font-variant-numeric:tabular-nums}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3{margin:0;line-height:1.2;text-wrap:balance;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:3px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar: wordmark, two pages as underlined text, the date */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:28px;min-height:58px;flex-wrap:wrap}
+.mark{font-weight:800;font-size:1.7rem;letter-spacing:-.06em;line-height:1;position:relative;padding-right:9px}
+.mark::after{content:"";position:absolute;right:0;bottom:.18em;width:6px;height:6px;border-radius:50%;background:var(--hi)}
+.mark i{font-style:normal}
+.pages{display:flex;gap:22px;align-self:stretch}
+.pages a{display:flex;align-items:center;text-decoration:none;color:var(--muted);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pages a:hover{color:var(--ink)}
+.pages a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
+.today{margin-left:auto;font-size:.88rem;color:var(--muted)}
+@media (max-width:640px){.today{display:none}}
+.status{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--go)} .dot.busy{background:var(--hi)} .dot.err{background:var(--bad)}
+main{padding-block:36px 72px}
+@media (max-width:640px){main{padding-block:24px 56px} header.top .wrap{gap:18px}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 13px;font-weight:600;font-size:.9rem;cursor:pointer;white-space:nowrap;text-decoration:none;color:var(--ink);transition:background-color .15s,border-color .15s}
+.btn:hover{border-color:var(--ink2)}
+.btn.primary{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent-strong)}
+.btn.primary:hover{border-color:var(--accent);filter:none}
+.btn.quiet{background:none;border-color:transparent;color:var(--accent);padding-inline:4px;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.btn.quiet:hover{text-decoration-thickness:2px}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+.hint{font-size:.86rem;color:var(--muted)}
+
+/* the sentence */
+.search{display:flex;flex-direction:column;gap:12px}
+.search label.lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.search .bar{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;font-size:clamp(1.15rem,2.4vw,1.5rem);font-weight:700;letter-spacing:-.015em;line-height:1.35;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+.search .bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search .bar::before{content:"I'm looking for";color:var(--muted);font-weight:500}
+.chip{display:inline-flex;align-items:baseline;gap:2px;background:linear-gradient(transparent 70%,var(--hi-soft) 70%);box-shadow:inset 0 -3px 0 var(--hi);padding:0 1px;color:var(--ink)}
+.chip button{border:0;background:none;cursor:pointer;color:var(--muted);font-size:.55em;font-weight:500;padding:0 3px;align-self:center;border-radius:4px}
+.chip button:hover{color:var(--bad)}
+.search .bar{align-items:center}
+.search input{flex:1 1 200px;min-width:160px;align-self:center;border:0;outline:0;background:transparent;padding:4px 0;font-size:1rem;font-weight:500;letter-spacing:0;color:var(--ink)}
+.search input::placeholder{color:var(--muted);opacity:.7}
+
+/* the live square: one box that shows the step running now and its newest update */
+.steps{margin-top:24px}
+.live{display:flex;flex-direction:column;gap:6px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:14px;padding:16px 18px;color:var(--ink)}
+.live.idle{background:var(--surface);border-color:var(--line);box-shadow:var(--shadow)}
+.live.wait{background:var(--hi-soft);border-color:color-mix(in srgb,var(--hi) 45%,transparent)}
+.live.fail{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 25%,transparent)}
+.live-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.live-title{font-size:1.1rem;font-weight:700;letter-spacing:-.01em}
+.live-step{font-size:.8rem;font-weight:500;color:var(--muted)}
+.live-head .btn{margin-left:auto}
+.beacon{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none;box-shadow:0 0 0 0 var(--accent)}
+.live.idle .beacon{background:var(--line);box-shadow:none;animation:none}
+.live.wait .beacon{background:var(--hi);box-shadow:none;animation:none}
+.live.fail .beacon{background:var(--bad);box-shadow:none;animation:none}
+@media (prefers-reduced-motion:no-preference){.live:not(.idle):not(.wait):not(.fail) .beacon{animation:beacon 1.6s ease-out infinite}}
+@keyframes beacon{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+.live-update{display:flex;gap:12px;align-items:baseline;font-size:.95rem;color:var(--ink2);padding-left:20px;min-height:1.5em}
+.live-update .t{margin-left:auto;font-size:.8rem;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:no-preference){.live-update.fresh span:first-child{animation:swapin .45s ease-out}}
+@keyframes swapin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.live-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-left:20px;margin-top:6px}
+.live .confirm{margin-left:20px;margin-top:4px;background:var(--surface)}
+@media (max-width:640px){.live-update,.live-acts{padding-left:0}.live .confirm{margin-left:0}}
+.doing{font-size:.9rem}
+
+/* views: underlined text tabs */
+.feedsec{margin-top:36px}
+.steps[hidden] + .feedsec{margin-top:8px}
+.toolbar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:0}
+.tabs{display:flex;gap:4px 22px;flex-wrap:wrap}
+.tabs button{border:0;background:none;border-bottom:2px solid transparent;padding:10px 0;margin-bottom:-1px;font-weight:600;color:var(--muted);cursor:pointer;font-size:.95rem}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tabs .n{display:inline-block;margin-left:6px;font-size:.78rem;font-weight:600;color:var(--ink2);background:var(--sunk);border-radius:6px;padding:0 6px;line-height:1.6}
+.tabs button[aria-pressed="true"] .n{background:var(--ink);color:var(--bg)}
+.tabs .btn.quiet{color:var(--muted);text-decoration:none;padding:10px 0}
+.tabs .btn.quiet[aria-pressed="true"]{color:var(--ink)}
+.switch{display:flex;gap:8px;align-items:center;font-size:.86rem;color:var(--muted);padding:10px 0}
+/* job search: a quiet box at the end of the tab row */
+.jobsearch{position:relative;display:flex;align-items:center;margin-bottom:8px;flex:0 1 280px;min-width:0}
+.jobsearch svg{position:absolute;left:11px;width:15px;height:15px;color:var(--muted);pointer-events:none}
+.jobsearch input{width:100%;min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:7px 32px 7px 33px;font-size:.92rem;color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.jobsearch input::placeholder{color:var(--muted)}
+.jobsearch input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.jobsearch input::-webkit-search-cancel-button{display:none}
+.jobsearch .clear{position:absolute;right:4px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:1.05rem;line-height:1;padding:4px 8px;border-radius:6px}
+.jobsearch .clear:hover{color:var(--ink)}
+.meta .when{color:var(--muted)}.switch input{accent-color:var(--accent);width:16px;height:16px}
+
+@media (max-width:640px){
+  .toolbar .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
+  .toolbar .tabs::-webkit-scrollbar{display:none}
+  .toolbar .tabs button{flex:none}
+  .toolbar{flex-direction:column;align-items:flex-start;gap:0}
+  .jobsearch{flex:none;width:100%;margin:4px 0 10px;order:-1}}
+/* the feed: rows on one sheet */
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;box-shadow:var(--shadow)}
+.list > .hint{padding:14px 20px}
+.job{position:relative;display:flex;flex-direction:column;gap:8px;padding:18px 20px 18px 24px;border-top:1px solid var(--line2);min-width:0;transition:background-color .15s}
+.job:first-child{border-top:0}
+.job:hover{background:color-mix(in srgb,var(--sunk) 55%,transparent)}
+.job::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 3px 3px 0;background:var(--line)}
+.job.go::before{background:var(--go)} .job.ask::before{background:var(--hi)} .job.new::before{background:var(--accent);opacity:.35} .job.check::before{background:var(--check)}
+.jt{display:flex;gap:16px;align-items:flex-start;justify-content:space-between}
+.jt h3{font-size:1.08rem;font-weight:700;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:.9rem;color:var(--ink2);margin-top:3px;overflow-wrap:anywhere}
+.meta .co{font-weight:600;color:var(--ink)}
+.meta .src{color:var(--muted)}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
+.side .open{font-size:.88rem;font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;white-space:nowrap;color:var(--ink2);padding-top:3px}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.go{color:var(--go)} .pill.ask{color:var(--ask)} .pill.no{color:var(--no)} .pill.new{color:var(--muted)} .pill.check{color:var(--check)}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.facts span{font-size:.8rem;background:var(--sunk);color:var(--ink2);border-radius:6px;padding:1px 8px;font-weight:500}
+.facts span.clash{background:var(--bad-soft);color:var(--bad)}
+.reason{font-size:.94rem;color:var(--ink2);max-width:72ch}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:2px}
+.acts .remove{margin-left:auto;background:none;border-color:transparent;color:var(--muted)}
+.acts .remove:hover{color:var(--ink);border-color:var(--line)}
+.acts select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--surface);font-size:.88rem;font-weight:500}
+.score{font-size:.82rem;opacity:.85}
+details.more{max-width:72ch}
+details.more summary{cursor:pointer;font-size:.88rem;font-weight:600;color:var(--ink2);list-style:none;display:inline-flex;align-items:center;gap:6px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
+details.more[open] summary::before{transform:rotate(45deg)}
+.adtext{white-space:pre-wrap;font-size:.9rem;line-height:1.6;max-height:320px;overflow:auto;border-left:2px solid var(--line);padding:4px 0 4px 14px;margin-top:8px;color:var(--ink2)}
+.empty{padding:48px 24px;text-align:center;color:var(--ink2)}
+.empty h3{margin-bottom:6px;font-size:1.15rem}
+.empty p{max-width:46ch;margin:0 auto}
+.empty .applied-today{font-size:2.75rem;font-weight:800;line-height:1;letter-spacing:-.03em;color:var(--go);margin-bottom:8px;font-variant-numeric:tabular-nums}
+
+/* Ask me: the question sits above its answer */
+.answer{display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex:1 1 100%;background:var(--hi-soft);border-radius:10px;padding:12px 14px;margin-top:4px}
+.answer .k{font-weight:600;font-size:.95rem}
+.answer .k.q{flex:1 1 100%;color:var(--ink)}
+.answer select{min-height:38px;border-radius:8px;border:1px solid var(--line);padding:4px 10px;background:var(--surface);color:var(--ink);font-weight:500}
+.anstext{display:flex;flex-direction:column;gap:8px;flex:1 1 100%}
+.anstext textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--surface);color:var(--ink)}
+.anstext .btn{align-self:flex-end}
+
+/* misc */
+.banner{border-radius:10px;padding:12px 14px;font-size:.92rem;margin-bottom:16px;background:var(--hi-soft)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--bad-soft);color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent);padding:10px 16px;border-radius:10px;font-size:.92rem;font-weight:500;z-index:20;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+.spinner{width:22px;height:22px;border-radius:50%;border:3px solid var(--accent-soft);border-top-color:var(--accent);flex:none}
+@media (prefers-reduced-motion:no-preference){.spinner{animation:spin 1s linear infinite}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.9rem;background:var(--hi-soft);border-radius:10px;padding:8px 12px}
+.err{color:var(--bad);font-weight:600}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.row-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+
+/* About Me */
+.me-page{display:flex;flex-direction:column;gap:20px;max-width:780px}
+.me-head{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.me-head h1{font-size:clamp(1.9rem,4vw,2.5rem);letter-spacing:-.03em;font-weight:800}
+.me-head > .hint{max-width:62ch;font-size:.95rem}
+.kicker{font-size:.9rem;font-weight:600;color:var(--accent)}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.me-sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.me-sec h2{font-size:1.2rem;margin-bottom:4px}
+.me-sec > .hint{margin-bottom:10px}
+@media (max-width:640px){.me-sec{padding:18px 16px}}
+.doctext{white-space:pre-wrap;overflow-wrap:anywhere;max-height:440px;overflow:auto;border-left:2px solid var(--hi);padding:2px 0 2px 16px;font-size:.94rem;line-height:1.65}
+textarea.doctext{width:100%;min-height:360px;max-height:none;border:1px solid var(--accent);border-radius:10px;padding:12px 14px;font-family:inherit;color:var(--ink);background:var(--surface)}
+.cvrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:6px 0}
+.upload{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;border:2px dashed var(--line);border-radius:14px;padding:32px 16px;margin:16px 0;cursor:pointer;text-align:center;transition:border-color .15s,background-color .15s}
+.upload:hover,.upload:focus-within{border-color:var(--accent);background:var(--accent-soft)}
+.upload strong{font-size:1.05rem}
+.upload input{max-width:100%;margin-top:10px}
+.learned{list-style:none;padding:0;margin:4px 0 0;display:flex;flex-direction:column}
+.learned li{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line2)}
+.learned li:first-child{border-top:0}
+.field{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:4px 20px;padding:13px 0;border-top:1px solid var(--line2);align-items:start}
+.field:first-of-type{border-top:0}
+@media (max-width:640px){.field{grid-template-columns:1fr}}
+.field .k{font-weight:600;font-size:.94rem}
+.field .u{font-size:.8rem;color:var(--muted);margin-top:2px}
+.field .v{cursor:text;border-radius:8px;padding:5px 8px;margin:-5px -8px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.95rem;transition:background-color .15s}
+.field .v:hover{background:var(--sunk)}
+.field .v.empty{color:var(--muted)}
+.field input[type=text],.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface);font-size:.95rem}
+.field input[type=text]:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px var(--accent-soft)}
+.field textarea{min-height:110px;resize:vertical}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts label{display:flex;gap:7px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:.92rem;cursor:pointer;background:var(--surface)}
+.opts label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opts input{accent-color:var(--accent)}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="mark" aria-label="Sift">sift</div>
+    <nav class="pages" id="pages" aria-label="Pages"></nav>
+    <div class="today" id="today"></div>
+    <div class="status" id="sync" hidden><span class="dot"></span><span>Starting…</span></div>
+  </div>
+</header>
+<main class="wrap">
+  <div id="banners"></div>
+  <div id="page-feed">
+  <section class="search" aria-labelledby="roles-lbl">
+    <label class="lbl" id="roles-lbl" for="role-input">Roles I'm looking for</label>
+    <div class="bar" id="bar"><input id="role-input" type="text" placeholder="Add a role and press Enter" aria-label="Add a role you're looking for, then press Enter" autocomplete="off"></div>
+  </section>
+  <div class="steps" id="steps" aria-label="Steps"></div>
+  <section class="feedsec" aria-label="Daily feed">
+    <div class="toolbar"><div class="tabs" id="tabs" role="toolbar" aria-label="Feed views"></div>
+      <div class="jobsearch" role="search">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+        <input id="job-q" type="search" placeholder="Search jobs, companies, places" aria-label="Search jobs" autocomplete="off">
+        <button class="clear" id="job-q-clear" type="button" aria-label="Clear search" hidden>×</button>
+      </div></div>
+    <div class="list" id="list"><div class="empty"><h3>Loading your feed…</h3><p>Your jobs appear here.</p></div></div>
+  </section>
+  </div>
+  <div id="page-me" hidden></div>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+"use strict";
+/* ---------------- config ---------------- */
+const SHEET_ID_DEFAULT = "YOUR_GOOGLE_SHEET_ID";   // your job-search Google Sheet
+const SHEETS = "Google Sheets", DRIVE = "Google Drive", REMOTE = "Claude Code Remote";
+// Same tables and columns as the sheet (engine/na_core.py SCHEMA). Tab <-> collection, row <-> document.
+const SCHEMA = {
+  Search: { coll: "search", key: "setting", range: "Search!A1:C40", cols: ["setting","value","help"] },
+  Me:     { coll: "me", key: "fact", range: "Me!A1:C60", cols: ["fact","value","usedFor"] },
+  Feed:   { coll: "feed", key: "jobId", sheet: "'New jobs'", range: "'New jobs'!A1:T5000", cols: ["dateFound","source","title","company","location","link","facts","role","decision","reason","requirements","cv","cvScore","status","note","dateApplied","posted","jobId","advert","applyUrl"] },
+  Runs:   { coll: "runs", key: null, range: "Runs!A1:D2000", cols: ["when","step","summary","problems"] },
+};
+const COL = (tab, field) => String.fromCharCode(65 + SCHEMA[tab].cols.indexOf(field));
+const STATUSES = ["", "Applied", "Interview", "Offer", "Rejected by employer"];
+const RUNS = [["collect","Collect"],["shortlist","Shortlist"],["cvs","Tailor CVs"]];
+
+/* ---------------- state ---------------- */
+const pageFromHash = () => ({ "#me": "me", "#history": "history", "#jobs": "history" })[location.hash] || "feed";
+const S = { page: pageFromHash(), isOwner: undefined, uid: null,
+            search: {}, me: {}, feed: {}, runs: {}, tasks: null, views: { feed: "ready", history: "new" }, useFacts: true, sheetId: SHEET_ID_DEFAULT,
+            sync: { state: "idle", text: "", at: 0 }, about: undefined, sample: null, wz: null, askText: {}, cvBusy: "", running: null, progress: {}, db: undefined, mcp: undefined, confirm: null, openAd: {}, editing: null, q: "", shortAt: undefined };
+try { const v = JSON.parse(localStorage.getItem("na:views") || "null"); if (v) Object.assign(S.views, v); } catch (e) {}
+const saveViews = () => { try { localStorage.setItem("na:views", JSON.stringify(S.views)); } catch (e) {} };
+
+/* ---------------- helpers ---------------- */
+const $ = id => document.getElementById(id);
+function h(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "value") e.value = v; else if (k === "checked") e.checked = !!v; else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat(Infinity)) if (k != null && k !== false) e.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  return e;
+}
+function toast(m, warn){ if (!warn) return; const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 3200); }
+const fold = s => String(s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const slug = s => fold(s).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 120) || "x";
+function docIdFor(tab, f, row){
+  if (tab === "Runs") return "r" + String(row).padStart(6, "0");
+  const v = String(f[SCHEMA[tab].key] || "").trim();
+  if (tab === "Feed") return /^[A-Za-z0-9_\-]{1,120}$/.test(v) ? v : "row" + String(row).padStart(6, "0");
+  return v ? slug(v) : "row" + String(row).padStart(6, "0");
+}
+const kv = coll => { const o = {}; for (const d of Object.values(S[coll])) if (d[SCHEMA[coll === "search" ? "Search" : "Me"].key]) o[fold(d[SCHEMA[coll === "search" ? "Search" : "Me"].key]).trim()] = d; return o; };
+const splitList = v => String(v || "").split(/[,;\n]/).map(x => x.trim()).filter(Boolean);
+const todayISO = () => new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" });
+const mcpMsg = (e, server) => ({
+  needs_reauth: `Reconnect ${server} in claude.ai Settings → Connectors.`,
+  server_not_connected: `Add ${server} in claude.ai Settings → Connectors.`,
+  selection_required: `Choose which ${server} connector Sift should use when claude.ai asks.`,
+  not_in_manifest: `${server} isn't allowed for Sift yet. Allow it from the page's permissions.`,
+  approval_required: `Sift needs your approval to use ${server}. Try again and allow it.`,
+  blocked_by_policy: `Your organisation blocks ${server} here.`,
+  server_unavailable: `${server} didn't answer. Try again in a moment.`,
+}[e && e.code] || (e && e.code === "tool_error" ? `${server} said: ${String(e.message || "").slice(0, 160)}` : `Couldn't reach ${server}. Try again.`));
+
+/* ---------------- role + fact matching (same rules as the engine) ---------------- */
+const STOP = new Set(["junior","graduate","grad","entry","level","trainee","assistant","associate","the","and","of","in","for","a","an","roles","role","jobs","job"]);
+const SUFFIXES = ["ments","ment","ers","er","ing","ics","ist","ists","s","e"];
+const CHANGES_JOB = new Set(["marketing","sales","account","project","programme","program","owner","designer","design","support","recruitment","recruiter","teacher","security","network","facilities"]);
+function stem(w){ w = w.toLowerCase(); for (const s of SUFFIXES) if (w.length - s.length >= 4 && w.endsWith(s)) { w = w.slice(0, -s.length); break; } if (w.length > 5 && w.endsWith("e")) w = w.slice(0, -1); return w; }
+function same(a, b){ const x = stem(a), y = stem(b); return x === y || (Math.min(x.length, y.length) >= 5 && (x.startsWith(y) || y.startsWith(x))); }
+function roleMatch(title, role){
+  const tw = String(title).toLowerCase().match(/[a-z0-9+#]+/g) || [];
+  const words = role.toLowerCase().split(/[^a-z0-9+#]+/).filter(x => x.length > 1 && !STOP.has(x));
+  if (!words.length) return false;
+  const pos = [];
+  for (const w of words) { const hits = tw.map((t, i) => same(t, w) ? i : -1).filter(i => i >= 0); if (!hits.length) return false; pos.push(hits); }
+  if (pos[0].some(p => words.every((_, k) => pos[k].includes(p + k)))) return true;
+  const used = new Set(pos.flat());
+  return !tw.some((t, i) => !used.has(i) && CHANGES_JOB.has(t));
+}
+function myRules(){
+  const s = kv("search"), m = kv("me");
+  const fluent = splitList((m["fluent languages"] || {}).value || "English").map(x => x.split("(")[0].trim().toLowerCase());
+  const maxYears = parseFloat((s["max years asked"] || {}).value);
+  return {
+    roles: splitList((s["roles"] || {}).value),
+    exclude: splitList((s["not these roles"] || {}).value).map(x => x.toLowerCase()),
+    patterns: splitList((s["work patterns"] || {}).value).map(x => x.toLowerCase().replace("onsite", "on-site")),
+    maxYears: isNaN(maxYears) ? null : maxYears,
+    needsVisa: /^y/i.test(String((m["needs visa sponsorship"] || {}).value || "")),
+    fluent,
+  };
+}
+function clashes(job, R){
+  const f = String(job.facts || "").toLowerCase(), out = [];
+  const yrs = /(\d+)\+ yrs/.exec(f); if (yrs && R.maxYears != null && +yrs[1] > R.maxYears) out.push(yrs[0]);
+  if (R.needsVisa && f.includes("no visa sponsorship")) out.push("no visa sponsorship");
+  const lang = /needs ([a-z, ]+)/.exec(f); if (lang) for (const l of lang[1].split(",").map(x => x.trim()).filter(Boolean)) if (!R.fluent.includes(l)) out.push("needs " + l);
+  for (const p of ["remote","hybrid","on-site"]) if (R.patterns.length && f.split(" · ").includes(p) && !R.patterns.includes(p)) out.push(p);
+  const tl = String(job.title || "").toLowerCase(); for (const x of R.exclude) if (x && new RegExp("(^|[^a-z])" + x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "([^a-z]|$)").test(tl)) out.push(x);
+  return out;
+}
+
+/* ---------------- capabilities ---------------- */
+(async () => {
+  const c = window.claude;
+  if (!c || !c.use) { S.db = null; S.mcp = null; render(); return; }
+  c.use("mcp").then(m => { S.mcp = m; render(); syncFromSheet(); });
+  c.use("sample").then(sm => { S.sample = sm; });
+  Promise.all([c.use("db"), c.use("user")]).then(async ([db, user]) => {
+    S.db = db;
+    S.isOwner = user ? await user.isOwner() : false;
+    S.uid = user ? await user.id() : null;
+    render();
+    if (!db || !S.isOwner) return;   // Sift is just for its owner: the jobs live in her Google Sheet
+    const sub = coll => db.collection(coll).onSnapshot(snap => {
+      const o = {}; for (const d of snap.docs) o[d.id] = Object.assign({ _id: d.id }, d.data()); S[coll] = o; render();
+    }, () => {});
+    sub("search"); sub("me"); sub("runs");
+    db.doc("about/me").onSnapshot(d => { S.about = d.exists ? d.data() : null; render(); }, () => { S.about = null; render(); });
+    db.doc("config/tasks").onSnapshot(d => { S.tasks = d.exists ? d.data() : null; render(); }, () => {});
+    db.doc("config/shortlisted").onSnapshot(d => { const x = d.exists ? d.data() : {}; S.shortAt = x.at || {}; S.shortSeeded = !!x.seeded; stampShortlisted(); render(); }, () => {});
+    db.doc("config/running").onSnapshot(d => {
+      const before = S.running; S.running = d.exists ? d.data() : null;
+      if (before && before.step !== "collect" && (!S.running || S.running.runId !== before.runId) && S._stopped !== before.runId && S._finished !== before.runId) {
+        syncFromSheet(); toast(STEP_NAME[before.step] + " finished.");
+      }
+      checkDone(); render();
+    }, () => {});
+    db.collection("progress").onSnapshot(snap => { const o = {}; for (const d of snap.docs) o[d.id] = d.data(); S.progress = o; checkDone(); render(); }, () => {});
+    syncFromSheet();
+  });
+})();
+
+/* ---------------- whose tables ----------------
+   Sift is just for its owner. The owner's jobs live only in their job-search Google Sheet (the New jobs tab);
+   their settings, facts, About me, run log and the run controls live in Sift's database. */
+const P = coll => coll;
+const usesSheet = () => S.isOwner === true;
+const norm = v => { const t = String(v == null ? "" : v).trim(); const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(t); return m ? `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}` : t; };
+const jobKey = (title, company) => fold(title) + "|" + fold(company);
+/* Edits made in the sheet while Sift is open show up within a minute, and as soon as you come back to the tab. */
+function pullNow(){ if (document.visibilityState === "visible" && S.isOwner) syncFromSheet(); }
+setInterval(pullNow, 60000);
+document.addEventListener("visibilitychange", pullNow);
+
+/* ---------------- the sheet (where your jobs live) ---------------- */
+/* The sheet tab behind each table (the feed lives in the "New jobs" tab). */
+const sheetName = tab => SCHEMA[tab].sheet || tab;
+const SHEET_TABS = ["Feed"];
+const inSheet = tab => usesSheet() && SHEET_TABS.includes(tab);
+/* Jobs tab = your applications list (Job title | Company | Link | CV | Applied | Date applied). Marking a job Applied ticks it there. */
+async function addToJobsTab(j){ return markAppliedInJobsTab(j, null); }
+async function markAppliedInJobsTab(j, applied){   // applied: true / false, or null = just make sure the job is listed
+  try {
+    const rows = ((await sheetsCall("get_values", { range: "Jobs!A1:F1000" })) || {}).values || [];
+    const i = rows.findIndex((r, k) => k > 0 && (r[2] === j.link || (fold(r[0]) === fold(j.title) && fold(r[1]) === fold(j.company))));
+    const d = applied ? new Date().toLocaleDateString("en-GB", { timeZone: "Europe/London" }) : "";
+    if (i > 0) { if (applied !== null) await sheetsCall("update_values", { range: `Jobs!D${i + 1}:F${i + 1}`, values: [[rows[i][3] || cvLink(j.cv) || "", applied ? "TRUE" : "FALSE", d]] }); }
+    else {
+      const firstEmpty = rows.findIndex((r, k) => k > 0 && !r[0]);
+      const at = firstEmpty > 0 ? firstEmpty + 1 : rows.length + 1;
+      await sheetsCall("update_values", { range: `Jobs!A${at}:F${at}`, values: [[j.title, j.company, j.link, cvLink(j.cv) || "", applied ? "TRUE" : "FALSE", d]] });
+    }
+  } catch (e) {}
+}
+async function removeFromJobsTab(j){   // clears the job's row in the Jobs tab; the next shortlisted job reuses the empty row
+  try {
+    const rows = ((await sheetsCall("get_values", { range: "Jobs!A1:F1000" })) || {}).values || [];
+    const i = rows.findIndex((r, k) => k > 0 && (r[2] === j.link || (fold(r[0]) === fold(j.title) && fold(r[1]) === fold(j.company))));
+    if (i > 0) await sheetsCall("update_values", { range: `Jobs!A${i + 1}:F${i + 1}`, values: [["", "", "", "", "", ""]] });
+  } catch (e) {}
+}
+async function sheetsCall(tool, input){
+  if (!S.mcp) throw { code: "capability_disabled" };
+  const r = await S.mcp.callTool(SHEETS, tool, Object.assign({ spreadsheetId: S.sheetId }, input), { cache: false });
+  return r.payload;
+}
+function rowsToDocs(tab, values){
+  const out = {}, cols = SCHEMA[tab].cols;
+  (values || []).slice(1).forEach((r, i) => {
+    const row = i + 2, f = { row };
+    cols.forEach((c, j) => f[c] = r[j] == null ? "" : String(r[j]));
+    if (tab !== "Runs" && !String(f[SCHEMA[tab].key] || "").trim() && cols.every(c => !f[c])) return;
+    out[docIdFor(tab, f, row)] = f;
+  });
+  return out;
+}
+let syncing = null;
+async function syncFromSheet(){
+  if (syncing || S.mcp === undefined || S.isOwner === undefined) return syncing;
+  if (!usesSheet()) return;
+  if (!S.mcp) { setSync("err", "Google Sheets isn't available in this view, so your jobs can't be shown. Open Sift in Claude."); return; }
+  syncing = (async () => {
+    setSync("busy", "Reading your sheet…");
+    try {
+      const feed = rowsToDocs("Feed", (await sheetsCall("get_values", { range: SCHEMA.Feed.range }) || {}).values);
+      for (const [id, j] of Object.entries(feed)) j._id = id;
+      const n = await pullAppliedTicks(feed);
+      S.feed = feed;
+      moveAdvertsOnce(feed);
+      stampShortlisted();
+      setSync("ok", "In sync with your sheet" + (n ? ` (${n} Applied tick${n === 1 ? "" : "s"} copied)` : ""));
+    } catch (e) { setSync("err", mcpMsg(e, SHEETS)); }
+    syncing = null; render();
+  })();
+  return syncing;
+}
+/* One time only: adverts and apply links used to be kept in Sift's database. Copy them into the sheet's
+   Advert (S) and Apply link (T) columns, then remember it's done. After this nothing reads the old copy. */
+const cellText = v => { const t = String(v || ""); return /^[=+\-@]/.test(t) ? "'" + t : t; };
+async function moveAdvertsOnce(feed){
+  if (!S.db || moveAdvertsOnce.busy) return;
+  moveAdvertsOnce.busy = true;
+  try {
+    const flag = await S.db.doc("config/migration").get();
+    if (flag.exists && flag.data().adverts) return;
+    const old = await new Promise((ok, no) => { let un = null; un = S.db.collection("feed").onSnapshot(snap => { ok(snap.docs.map(d => d.data())); if (typeof un === "function") setTimeout(un, 0); }, no); });
+    const byId = {}; for (const j of Object.values(feed)) if (j.jobId) byId[j.jobId] = j;
+    let n = 0;
+    for (const d of old) {
+      const j = byId[d.jobId]; if (!j || (!d.advert && !d.applyUrl) || j.advert || j.applyUrl) continue;
+      const at = COL("Feed", "advert"), to = COL("Feed", "applyUrl");
+      await sheetsCall("update_values", { range: `'New jobs'!${at}${j.row}:${to}${j.row}`, values: [[cellText(String(d.advert || "").slice(0, 6000)), cellText(d.applyUrl)]] });
+      j.advert = d.advert || ""; j.applyUrl = d.applyUrl || ""; n++;
+    }
+    await S.db.doc("config/migration").set({ adverts: true, copied: n, at: new Date().toISOString() });
+    if (n) { toast(`Copied ${n} advert${n === 1 ? "" : "s"} into your sheet.`); render(); }
+  } catch (e) {} finally { moveAdvertsOnce.busy = false; }
+}
+/* Your Jobs tab: ticking Applied there marks the job Applied in New jobs too. */
+async function pullAppliedTicks(feed){
+  let n = 0;
+  try {
+    const rows = ((await sheetsCall("get_values", { range: "Jobs!A1:F1000" })) || {}).values || [];
+    const jobs = Object.values(feed || {});
+    for (const r of rows.slice(1)) {
+      if (String(r[4] || "").toUpperCase() !== "TRUE") continue;
+      const j = jobs.find(j => (r[2] && j.link === r[2]) || jobKey(j.title, j.company) === jobKey(r[0], r[1]));
+      if (!j || j.status) continue;
+      const f = { status: "Applied", dateApplied: norm(r[5]) || todayISO() };
+      await sheetsCall("update_values", { range: `'New jobs'!${COL("Feed", "status")}${j.row}:${COL("Feed", "dateApplied")}${j.row}`, values: [[f.status, j.note || "", f.dateApplied]] });
+      Object.assign(j, f); n++;
+    }
+  } catch (e) {}
+  return n;
+}
+function setSync(state, text){ S.sync = { state, text, at: Date.now() }; renderSync(); }
+
+/* When each job joined the shortlist, so Shortlisted can show the newest first. The sheet has no column for it,
+   so Sift keeps it in its database (config/shortlisted: jobId -> time). A job gets its time when you press
+   Shortlist it, or the first time Sift sees the Shortlist step has shortlisted it. Jobs that were already
+   shortlisted before this existed get the date they were found (date only, so the card doesn't claim a time).
+   A job that leaves the shortlist loses its time, so shortlisting it again puts it back on top. */
+let stamping = false;
+async function saveShortAt(next, seeded){
+  if (!S.db || !S.isOwner) return;
+  S.shortAt = next;
+  try { await S.db.doc("config/shortlisted").set({ at: next, seeded: seeded || !!S.shortSeeded }); } catch (e) {}
+}
+async function stampShortlisted(){
+  if (stamping || !S.db || !S.isOwner || S.shortAt === undefined || !Object.keys(S.feed).length) return;
+  const next = Object.assign({}, S.shortAt), now = new Date().toISOString();
+  let changed = false;
+  for (const j of Object.values(S.feed)) {
+    if (!j._id || !j.title) continue;
+    const b = bucket(j);
+    if (b === "ready" && !next[j._id]) { next[j._id] = S.shortSeeded ? now : (norm(j.dateFound) || now.slice(0, 10)); changed = true; }
+    else if (b !== "ready" && b !== "tracked" && b !== "interview" && next[j._id]) { delete next[j._id]; changed = true; }
+  }
+  if (!changed && S.shortSeeded) return;
+  stamping = true;
+  try { await saveShortAt(next, true); S.shortSeeded = true; } finally { stamping = false; }
+}
+function markShortlisted(j, on){
+  if (S.shortAt === undefined) return;
+  const next = Object.assign({}, S.shortAt);
+  if (on) next[j._id] = new Date().toISOString(); else delete next[j._id];
+  saveShortAt(next);
+}
+const shortWhen = j => (S.shortAt && S.shortAt[j._id]) || "";
+
+/* Jobs: write the cells in the sheet (the only copy). Settings and facts: write them in Sift's database. */
+async function write(tab, id, fields){
+  const coll = SCHEMA[tab].coll, doc = S[coll][id];
+  if (!doc) throw new Error("not found");
+  if (!inSheet(tab)) { await S.db.doc(P(coll) + "/" + id).update(fields); return; }
+  const cols = Object.keys(fields).map(f => SCHEMA[tab].cols.indexOf(f)).sort((a, b) => a - b);
+  // confirm the row still holds this record (rows can move if the sheet was edited by hand)
+  const keyCol = SCHEMA[tab].key ? COL(tab, SCHEMA[tab].key) : null;
+  if (keyCol) {
+    const got = await sheetsCall("get_values", { range: `${sheetName(tab)}!${keyCol}${doc.row}` });
+    const v = ((got && got.values) || [[""]])[0][0] || "";
+    if (docIdFor(tab, { [SCHEMA[tab].key]: v }, doc.row) !== id) { await syncFromSheet(); throw new Error("moved"); }
+  }
+  const first = cols[0], last = cols[cols.length - 1], rowVals = [];
+  for (let c = first; c <= last; c++) { const f = SCHEMA[tab].cols[c]; rowVals.push(f in fields ? fields[f] : (doc[f] ?? "")); }
+  await sheetsCall("update_values", { range: `${sheetName(tab)}!${String.fromCharCode(65 + first)}${doc.row}:${String.fromCharCode(65 + last)}${doc.row}`, values: [rowVals] });
+  Object.assign(doc, fields);
+  render();
+}
+async function safeWrite(tab, id, fields, ok){
+  try { await write(tab, id, fields); if (ok) toast(ok); }
+  catch (e) { toast(e && e.message === "moved" ? "That row moved in the sheet. Sift re-read it: try again." : usesSheet() ? mcpMsg(e, SHEETS) : "Couldn't save. Try again.", 1); }
+}
+/* Add a row that doesn't exist yet: a job goes to the sheet (then re-reads it); a setting or fact to Sift's database. */
+async function createRow(tab, fields){
+  const coll = SCHEMA[tab].coll, cols = SCHEMA[tab].cols;
+  if (inSheet(tab)) {
+    await sheetsCall("append_values", { range: sheetName(tab) + "!A1", values: [cols.map(c => fields[c] ?? "")] });
+    await syncFromSheet();
+    return;
+  }
+  const row = Math.max(1, ...Object.values(S[coll]).map(d => d.row || 0)) + 1;
+  const f = Object.assign({}, ...cols.map(c => ({ [c]: fields[c] ?? "" })), { row });
+  await S.db.doc(P(coll) + "/" + docIdFor(tab, f, row)).set(f);
+}
+async function setField(tab, key, value, okMsg, usedFor){
+  const table = tab === "Search" ? "search" : "me", doc = kv(table)[fold(key).trim()];
+  try {
+    if (doc) await write(tab, doc._id || slug(key), { value });
+    else await createRow(tab, tab === "Search" ? { setting: key, value, help: usedFor || "" } : { fact: key, value, usedFor: usedFor || "" });
+    if (okMsg) toast(okMsg);
+  } catch (e) { toast(e && e.message === "moved" ? "That row moved in the sheet. Sift re-read it: try again." : usesSheet() ? mcpMsg(e, SHEETS) : "Couldn't save. Try again.", 1); }
+}
+
+/* ---------------- actions ---------------- */
+async function setRoles(list){
+  await setField("Search", "Roles", list.join(", "), "Saved. The next collection searches these roles.", "The role search bar in Sift.");
+  if (kv("search")["updated"] || !usesSheet()) setField("Search", "Updated", todayISO(), null, "Set by Sift when you change something.");
+}
+async function fire(which, startText, quiet){
+  if (!S.isOwner) return;
+  const id = S.tasks && S.tasks[which];
+  if (!id) { toast("Sift's tasks aren't set up yet.", 1); return; }
+  if (!S.mcp) { toast("Starting tasks needs the Claude Code Remote connector.", 1); return; }
+  try {
+    const runId = new Date().toISOString();
+    if (S.db) await S.db.doc("config/running").set({ step: which, runId, startedAt: runId, roles: myRules().roles });
+    try { await S.mcp.callTool(REMOTE, "fire_trigger", { trigger_id: id, text: (startText || "Started from the Sift app. Run id: ") + runId }); }
+    catch (e) { if (S.db) await S.db.doc("config/running").delete().catch(() => {}); throw e; }
+    if (!quiet) toast({ collect: "Collecting started. New jobs appear in about 15 minutes.", shortlist: "Shortlisting started.", cvs: "Tailoring CVs started." }[which]);
+  } catch (e) { toast(mcpMsg(e, REMOTE), 1); }
+  S.confirm = null; renderSteps();
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  if (needsWelcome()) {
+    $("pages").replaceChildren(); $("banners").replaceChildren(); renderSync();
+    $("page-feed").hidden = true; $("page-me").hidden = false;
+    return;
+  }
+  renderPages(); renderSync(); renderRuns(); renderBanners();
+  const jobsPage = S.page === "feed" || S.page === "history";
+  $("page-feed").hidden = !jobsPage; $("page-me").hidden = S.page !== "me";
+  document.querySelector("#page-feed .search").hidden = S.page !== "feed"; $("steps").hidden = S.page !== "feed";
+  if (S.page === "feed") renderSearch();
+  if (jobsPage) renderFeed();
+  else if (!S.editing) renderMe();
+}
+function renderPages(){
+  const nav = $("pages"); nav.replaceChildren();
+  const name = String((kv("me")["name"] || {}).value || "").split(" ")[0];
+  for (const [k, label] of [["feed", "Daily feed"], ["history", "Jobs"], ["me", "About Me"]])
+    nav.append(h("a", { href: "#" + k, "aria-current": S.page === k ? "page" : null }, label));
+}
+window.addEventListener("hashchange", () => { S.page = pageFromHash(); S.editing = null; render(); window.scrollTo(0, 0); });
+function renderSync(){
+  $("today").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/London" });
+  const el = $("sync"); el.replaceChildren(h("span", { class: "dot " + ({ ok: "ok", busy: "busy", err: "err" }[S.sync.state] || "") }), h("span", null, S.sync.text || "Starting…"));
+  if (usesSheet() && (S.sync.state === "ok" || S.sync.state === "err")) el.append(h("button", { class: "btn quiet", onclick: () => syncFromSheet() }, "Sync now"));
+}
+function lastRun(step){
+  const rs = Object.values(S.runs).filter(r => !step || r.step === step).sort((a, b) => (b.row || 0) - (a.row || 0));
+  return rs[0];
+}
+function renderRuns(){ renderSteps(); }
+/* The three steps as big buttons under the roles bar. */
+const STEP_NAME = { collect: "Collect", shortlist: "Shortlist", cvs: "Tailor CVs" };
+const STEP_DOING = { collect: "Collecting jobs…", shortlist: "Shortlisting jobs…", cvs: "Tailoring CVs…" };
+/* The live square. While a step runs it shows the step in bold ("Collecting jobs…") and, under it, only the newest
+   update from the task; each new update replaces the last one. Each task starts the next one itself when everything
+   ran smoothly (Collect → Shortlist → Tailor CVs), so the square simply moves on to the next step.
+   When nothing is running it says how the last run ended and offers what to do next. */
+const STEP_NUM = { collect: 1, shortlist: 2, cvs: 3 };
+const NEXT_STEP = { collect: "shortlist", shortlist: "cvs" };
+const STEP_ING = { collect: "Collecting", shortlist: "Shortlisting", cvs: "Tailoring CVs" };
+const logStep = s => { const t = fold(s); return t.startsWith("collect") ? "collect" : t.startsWith("shortlist") ? "shortlist" : /cv/.test(t) ? "cvs" : null; };
+function startBtn(k, label, primary){
+  const why = !S.isOwner ? "Only Sift's owner can start Sift." : !S.mcp ? "Needs your Claude Code Remote connection: open Sift in Claude." : !(S.tasks && S.tasks[k]) ? (S.db === undefined ? "Loading…" : "This step's task isn't linked to Sift yet.") : "";
+  return h("button", { class: "btn" + (primary ? " primary" : ""), "aria-disabled": why ? "true" : null, title: why || null,
+    onclick: async () => {
+      if (why) { toast(why, 1); return; }
+      if (k === "collect") { S.confirm = "collect"; renderSteps(); return; }
+      if (S.firing) return; S.firing = true; try { await fire(k); } finally { S.firing = false; }
+    } }, label);
+}
+function stopControl(r){
+  return S.confirmStop
+    ? h("div", { class: "confirm" }, `Stop ${STEP_ING[r.step].toLowerCase()}? What's already done stays, and the next step won't start.`,
+        h("button", { class: "btn primary", onclick: stopRun }, "Stop"),
+        h("button", { class: "btn quiet", onclick: () => { S.confirmStop = false; renderSteps(); } }, "Keep going"))
+    : null;
+}
+function updateLine(text, since, key){
+  const fresh = S._liveKey !== key; S._liveKey = key;
+  return h("p", { class: "live-update" + (fresh ? " fresh" : "") },
+    h("span", null, text),
+    since ? h("span", { class: "t", "aria-hidden": "true", "data-since": String(since) }, fmtMins(Date.now() - since)) : null);
+}
+function runningSquare(){
+  const r = S.running, ps = runProgress().filter(p => p.detail), last = ps[ps.length - 1];
+  const since = last ? noteSince(last) : (Date.parse(r.startedAt) || Date.now());
+  setTimeout(tickActivity, 0);
+  return h("div", { class: "live", role: "status", "aria-live": "polite" },
+    h("div", { class: "live-head" },
+      h("span", { class: "beacon", "aria-hidden": "true" }),
+      h("strong", { class: "live-title" }, STEP_DOING[r.step] || "Working…"),
+      STEP_NUM[r.step] ? h("span", { class: "live-step" }, `Step ${STEP_NUM[r.step]} of 3`) : null,
+      S.confirmStop ? null : h("button", { class: "btn", onclick: () => { S.confirmStop = true; renderSteps(); } }, "Stop")),
+    updateLine(last ? last.detail : "Starting the task…", since, r.runId + "-" + (last ? last.n : 0)),
+    stopControl(r));
+}
+function idleSquare(){
+  const lr = lastRun(), step = lr ? logStep(lr.step) : null;
+  const jobs = Object.values(S.feed).filter(j => j.title);
+  const ask = jobs.filter(j => bucket(j) === "ask").length, check = jobs.filter(j => bucket(j) === "check").length;
+  const failed = !!(lr && String(lr.problems || "").trim()) || /stopped/i.test(String(lr && lr.summary || ""));
+  let cls = "idle", title = "Ready", line = "Start a run and Sift collects, shortlists and tailors CVs, one after the other.";
+  const acts = [];
+  if (S.confirm === "collect") {
+    return h("div", { class: "live idle" },
+      h("div", { class: "live-head" }, h("span", { class: "beacon", "aria-hidden": "true" }), h("strong", { class: "live-title" }, "Start a run?")),
+      h("p", { class: "live-update" }, h("span", null, "Collect uses up to your daily Apify budget. Shortlist and Tailor CVs follow on their own if nothing needs you.")),
+      h("div", { class: "live-acts" }, h("button", { class: "btn primary", onclick: () => fire("collect") }, "Start"),
+        h("button", { class: "btn quiet", onclick: () => { S.confirm = null; renderSteps(); } }, "Cancel")));
+  }
+  if (lr && step) {
+    const name = STEP_ING[step];
+    if (failed) {
+      cls = "fail"; title = name + " stopped";
+      line = String(lr.problems || lr.summary || "Something went wrong.").trim();
+      acts.push(startBtn(step, "Try again", true));
+      if (NEXT_STEP[step]) acts.push(startBtn(NEXT_STEP[step], "Continue to " + STEP_NAME[NEXT_STEP[step]]));
+    } else if (step === "shortlist" && (ask || check)) {
+      cls = "wait"; title = "Waiting for you";
+      line = `Shortlisting finished. ${[ask && `${ask} Ask me`, check && `${check} Check manually`].filter(Boolean).join(" and ")} to look at before tailoring CVs.`;
+      acts.push(startBtn("cvs", "Tailor CVs now", true));
+    } else {
+      title = step === "cvs" ? "All done" : name + " finished";
+      line = String(lr.summary || "").trim() || "Finished.";
+      if (NEXT_STEP[step]) acts.push(startBtn(NEXT_STEP[step], "Continue to " + STEP_NAME[NEXT_STEP[step]], true));
+    }
+    if (lr.when) line += " · " + lr.when;
+  }
+  acts.push(startBtn("collect", lr ? "Start a new run" : "Start a run", !acts.length));
+  return h("div", { class: "live " + cls, role: "status", "aria-live": "polite" },
+    h("div", { class: "live-head" }, h("span", { class: "beacon", "aria-hidden": "true" }), h("strong", { class: "live-title" }, title)),
+    updateLine(line, null, "idle-" + title + line),
+    h("div", { class: "live-acts" }, acts));
+}
+function renderSteps(){
+  const el = $("steps"); if (!el) return;
+  el.replaceChildren(S.running ? runningSquare() : idleSquare());
+}
+function renderBanners(){
+  const b = $("banners"); b.replaceChildren();
+  if (S.db === null && S.mcp === null) b.append(h("div", { class: "banner warn" }, "Open Sift in Claude to see your feed: it reads your Google Sheet."));
+  else if (S.isOwner === false) b.append(h("div", { class: "banner warn" }, "This Sift is private to its owner."));
+
+  const r = lastRun();
+
+}
+function renderSearch(){
+  const bar = $("bar"), input = $("role-input");
+  [...bar.querySelectorAll(".chip")].forEach(c => c.remove());
+  const roles = myRules().roles;
+  for (const r of roles) bar.insertBefore(h("span", { class: "chip" }, r, h("button", { "aria-label": "Remove " + r, onclick: () => setRoles(roles.filter(x => x !== r)) }, "×")), input);
+}
+$("role-input").addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== ",") return;
+  e.preventDefault();
+  const v = e.target.value.trim().replace(/,$/, ""); if (!v) return;
+  const roles = myRules().roles; if (roles.some(r => r.toLowerCase() === v.toLowerCase())) { e.target.value = ""; return; }
+  e.target.value = ""; setRoles(roles.concat([v]));
+});
+
+function bucket(j){
+  const d = String(j.decision || "").toLowerCase(), st = String(j.status || "");
+  if (st === "Not for me") return "rejected";
+  if (st === "Interview") return "interview";
+  if (st && st !== "") return "tracked";
+  if (d.startsWith("shortlist")) return "ready";
+  if (d.startsWith("ask")) return "ask";
+  if (d.startsWith("check")) return "check";
+  if (d.startsWith("reject")) return "rejected";
+  return "new";
+}
+// Daily feed: the jobs that need you today. Jobs: everything collected, applied for or rejected.
+const PAGE_VIEWS = { feed: [["ready","Shortlisted"],["ask","Ask me"],["check","Check manually"]], history: [["new","Collected"],["tracked","Applied"],["interview","Interview"],["rejected","Rejected"]] };
+for (const pg in PAGE_VIEWS) if (!PAGE_VIEWS[pg].some(v => v[0] === S.views[pg])) S.views[pg] = PAGE_VIEWS[pg][0][0];
+function feedJobs(){
+  const R = myRules();
+  return Object.values(S.feed).filter(j => j.title).map(j => Object.assign(j, { _clash: clashes(j, R), _role: !R.roles.length || R.roles.some(r => roleMatch(j.title, r)) }));
+}
+/* ---------------- collecting screen ---------------- */
+const STAGES = [
+  ["start", "Starting", "Waking up the Collect task"],
+  ["ready", "Reading your search bar and facts", "Roles, places, work patterns and the facts in Me"],
+  ["search", "Searching job sites", "Company career sites, LinkedIn, Indeed, Reed, Glassdoor and more"],
+  ["results", "Reading the results", "Collecting every job the sites returned"],
+  ["filter", "Filtering with your facts", "Dropping wrong roles, senior jobs, visa and language clashes, duplicates"],
+  ["add", "Adding new jobs to your feed", "Writing them to your Google Sheet"],
+];
+function runProgress(){
+  const r = S.running; if (!r) return [];
+  return Object.values(S.progress).filter(p => p.runId === r.runId).sort((a, b) => (a.n || 0) - (b.n || 0));
+}
+function checkDone(){
+  const r = S.running; if (!r || !S.db) return;
+  const ps = runProgress(), last = ps[ps.length - 1];
+  if (last && (last.done || last.failed)) {
+    if (S._finished === r.runId) return;
+    S._finished = r.runId;
+    // The task itself hands over to the next step (or clears the run) right after its last update. Only tidy up
+    // if it still hasn't a few minutes later, so the page never cuts in while one step is starting the next.
+    setTimeout(() => S.db.doc(P("config") + "/running").get().then(d => { if (d.exists && d.data().runId === r.runId) return S.db.doc(P("config") + "/running").delete(); }).catch(() => {}), 180000);
+    syncFromSheet();
+    const name = STEP_NAME[r.step] || "Collect";
+    if (last.failed) toast(name + " stopped: " + (last.detail || "something went wrong") + ".", 1);
+    else { toast(last.detail || name + " finished."); if (r.step === "collect") S.views.history = "new"; else S.views.feed = "ready"; saveViews(); }
+  }
+}
+/* Stop: the Collect task checks config/running before every step; once it's gone (or belongs to another run)
+   the task cancels its searches, logs "Stopped by you" and ends without adding anything more. */
+async function stopRun(){
+  S.confirmStop = false;
+  if (!S.db || !S.running) return;
+  const { runId, step } = S.running;
+  S._finished = runId; S._stopped = runId;
+  try {
+    await S.db.doc(P("config") + "/running").delete();
+    toast(`${STEP_NAME[step]} stopped. The task finishes the job it's on and ends; what's already done stays.`);
+  } catch (e) { toast("Couldn't stop it. Try again.", 1); }
+}
+function fmtElapsed(ms){ const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60; return m + ":" + String(s).padStart(2, "0"); }
+function collectingView(){
+  const r = S.running, ps = runProgress(), last = ps[ps.length - 1];
+  const reached = last ? STAGES.findIndex(st => st[0] === last.stage) : 0;
+  const quiet = Date.now() - Date.parse((last && last.at) || r.startedAt);
+  const box = h("section", { class: "collecting", "aria-live": "polite", "aria-busy": "true" },
+    h("div", { class: "head" }, h("div", { class: "spinner", "aria-hidden": "true" }),
+      h("div", null, h("h2", null, "Collecting jobs…"),
+        h("p", { class: "hint" }, "For " + ((r.roles && r.roles.length) ? r.roles.join(", ") : "the roles in your search bar") + ". You can close Sift: collecting carries on and new jobs appear here."))),
+    h("ol", { class: "stages" }, STAGES.map((st, i) => {
+      const mine = ps.filter(p => p.stage === st[0]).pop();
+      const cls = i < reached || (last && last.done) ? "done" : i === Math.max(reached, 0) ? "now" : "todo";
+      return h("li", { class: cls }, h("span", { class: "ic", "aria-hidden": "true" }, cls === "done" ? "✓" : ""),
+        h("div", null, h("div", null, st[1]), h("div", { class: "d" }, (mine && mine.detail) || st[2])));
+    })),
+    h("div", { class: "row", style: "display:flex;gap:12px;align-items:center;flex-wrap:wrap" },
+      h("span", { class: "doing" }, nowDoing()),
+      quiet > 25 * 60000 && h("span", { class: "hint" }, "This is taking longer than usual. The task may be waiting for approval in its settings."),
+      S.confirmStop
+        ? h("div", { class: "confirm" }, "Stop collecting? Jobs already added stay in your feed.",
+            h("button", { class: "btn primary", onclick: stopRun }, "Stop"),
+            h("button", { class: "btn quiet", onclick: () => { S.confirmStop = false; renderFeed(); } }, "Keep going"))
+        : h("button", { class: "btn", onclick: () => { S.confirmStop = true; renderFeed(); } }, "Stop collecting")));
+  return box;
+}
+/* What the task is doing right now: the newest progress note it wrote for this run. */
+/* The live activity: what the task is doing now (with how long it's been on it), and the last few steps it finished. */
+/* Every minute the box changes, even when the task is busy inside one long step:
+   the current line counts up ("· 3 min") and, after 2 quiet minutes, says it's still on it.
+   Times come from when this page first saw each note (the task's own "at" is only approximate). */
+const seenAt = {};
+function noteSince(p){
+  const id = p.runId + "-" + p.n;
+  if (!seenAt[id]) seenAt[id] = Date.now();
+  return seenAt[id];
+}
+function fmtMins(ms){ const m = Math.floor(ms / 60000); return m < 1 ? "just now" : m + " min"; }
+function tickActivity(){
+  for (const el of document.querySelectorAll("[data-since]")) el.textContent = fmtMins(Date.now() - Number(el.dataset.since));
+  for (const el of document.querySelectorAll("[data-quiet-since]")) {
+    const quiet = Date.now() - Number(el.dataset.quietSince), m = Math.floor(quiet / 60000);
+    el.hidden = m < 2;
+    el.textContent = el.dataset.kind === "start"
+      ? `Still waking up the task (${m} min). A fresh session can take a few minutes before its first update.`
+      : `Still on this step (${m} min with no new update). It can't post mid-step; the next line appears when this one finishes.`;
+  }
+}
+setInterval(tickActivity, 15000);
+function activityLog(){
+  const r = S.running, ps = runProgress().filter(p => p.detail);
+  const timer = since => h("span", { class: "t", "aria-hidden": "true", "data-since": String(since) }, fmtMins(Date.now() - since));
+  if (!ps.length) {
+    const since = Date.parse(r && r.startedAt) || Date.now();
+    const ul = h("ul", { class: "activity" },
+      h("li", { class: "now" }, h("span", { class: "ic", "aria-hidden": "true" }, "●"), h("span", null, "Starting the task…"), timer(since)),
+      h("li", { "data-quiet-since": String(since), "data-kind": "start", hidden: true }, h("span", { class: "ic", "aria-hidden": "true" }, "")));
+    setTimeout(tickActivity, 0);
+    return ul;
+  }
+  const shown = ps.slice(-5), last = shown[shown.length - 1];
+  const items = shown.map(p => {
+    const now = p === last && !p.done && !p.failed;
+    return h("li", { class: now ? "now" : null },
+      h("span", { class: "ic", "aria-hidden": "true" }, now ? "●" : "✓"), h("span", null, p.detail), now ? timer(noteSince(p)) : null);
+  });
+  if (!last.done && !last.failed) items.push(h("li", { "data-quiet-since": String(noteSince(last)), "data-kind": "step", hidden: true }));
+  setTimeout(tickActivity, 0);
+  return h("ul", { class: "activity" }, items);
+}
+function nowDoing(){
+  const ps = runProgress(), last = ps[ps.length - 1];
+  return last && last.detail ? last.detail : "Starting the task…";
+}
+
+function renderFeed(){
+  if (S.page === "feed") renderSteps();
+  const VIEWS = PAGE_VIEWS[S.page] || PAGE_VIEWS.feed, view = S.views[S.page] || VIEWS[0][0];
+  document.querySelector(".feedsec").setAttribute("aria-label", S.page === "history" ? "Jobs" : "Daily feed");
+  const all = feedJobs();
+  const words = fold(S.q).split(/\s+/).filter(Boolean);
+  const hay = j => fold([j.title, j.company, j.location, j.source, j.facts, j.role, j.reason, j.status].join(" "));
+  const visible = all.filter(j => j._role && !(S.useFacts && j._clash.length && !["tracked","interview"].includes(bucket(j))))
+    .filter(j => !words.length || (t => words.every(w => t.includes(w)))(hay(j)));
+  const counts = {}; for (const j of visible) { const b = bucket(j); counts[b] = (counts[b] || 0) + 1; } counts.all = visible.length;
+  const tabs = $("tabs"); tabs.replaceChildren();
+  const pick = k => { S.views[S.page] = k; saveViews(); renderFeed(); };
+  for (const [k, n] of VIEWS) tabs.append(h("button", { "aria-pressed": view === k ? "true" : "false", onclick: () => pick(k) }, n, counts[k] ? h("span", { class: "n" }, String(counts[k])) : null));
+  const list = $("list"); list.replaceChildren();
+  if (!Object.keys(S.feed).length) {
+    list.append(h("div", { class: "empty" }, h("h3", null, S.sync.state === "busy" ? "Reading your sheet…" : "No jobs yet"),
+      h("p", null, S.isOwner ? "Press Collect. Jobs land in your sheet's New jobs tab and show up under Jobs, then Shortlist sorts them into your Daily feed." : "Once your roles are saved on your Me page, jobs collected for you show up here after the next collection.")));
+    return;
+  }
+  const order = { ready: 0, ask: 1, new: 2, check: 3, tracked: 4, interview: 5, rejected: 6 };
+  const rows = visible.filter(j => bucket(j) === view)
+    .sort((a, b) => (order[bucket(a)] - order[bucket(b)]) || (view === "ready" ? shortWhen(b).localeCompare(shortWhen(a)) : 0) || norm(b.dateFound).localeCompare(norm(a.dateFound)) || (b.row - a.row));
+  if (!rows.length && words.length) {
+    const elsewhere = VIEWS.filter(([k]) => k !== view && counts[k]).map(([k, n]) => `${n} (${counts[k]})`);
+    list.append(h("div", { class: "empty" }, h("h3", null, `No jobs here match “${S.q.trim()}”`),
+      h("p", null, elsewhere.length ? "Matches in " + elsewhere.join(", ") + ". " : "Try fewer or different words. ",
+        h("button", { class: "btn quiet", onclick: () => setQuery("") }, "Clear search"))));
+    return;
+  }
+  if (!rows.length && view === "ready") {
+    // Shortlist cleared: show how many jobs were applied for today (London date, the same date Sift writes to Date applied).
+    const today = todayISO();
+    const appliedToday = Object.values(S.feed).filter(j => j.title && norm(j.dateApplied).slice(0, 10) === today).length;
+    list.append(h("div", { class: "empty" },
+      h("div", { class: "applied-today", "aria-hidden": "true" }, String(appliedToday)),
+      h("h3", null, (appliedToday === 1 ? "job" : "jobs") + " applied for today", h("span", { class: "sr" }, ": " + appliedToday)),
+      h("p", null, appliedToday
+        ? "Your shortlist is clear. Nice work. Shortlisting runs after each collection."
+        : "No shortlisted jobs right now. Shortlisting runs after each collection.")));
+    return;
+  }
+  if (!rows.length && view === "new") {
+    // Collected view cleared: show how many jobs were collected today (London date, from Date found).
+    // Date found can come back from the sheet as a serial number (e.g. 46321), so turn those into a date too.
+    const today = todayISO();
+    const foundDay = v => { const t = norm(v); return /^\d{5}$/.test(t) ? new Date((Number(t) - 25569) * 864e5).toISOString().slice(0, 10) : t.slice(0, 10); };
+    const collectedToday = Object.values(S.feed).filter(j => j.title && foundDay(j.dateFound) === today).length;
+    list.append(h("div", { class: "empty" },
+      h("div", { class: "applied-today", "aria-hidden": "true" }, String(collectedToday)),
+      h("h3", null, (collectedToday === 1 ? "job" : "jobs") + " collected today", h("span", { class: "sr" }, ": " + collectedToday)),
+      h("p", null, collectedToday
+        ? "All reviewed. Press Collect to look for more."
+        : "None waiting for review. Press Collect to look for more.")));
+    return;
+  }
+  if (!rows.length) list.append(h("div", { class: "empty" }, h("h3", null, "Nothing here"), h("p", null, { new: "No collected jobs waiting for review. Press Collect to look for more.", ready: "No shortlisted jobs right now. Shortlisting runs after each collection.", ask: "No questions waiting for you.", check: "Nothing needs checking by hand.", cvs: "No tailored CVs yet. Press Tailor CVs after shortlisting.", tracked: "When you mark a job Applied, it moves here.", interview: "When you set a job's status to Interview, it moves here.", rejected: "No rejected jobs. If you change your mind about one, press Shortlist it on it here." }[view] || "No jobs in this view.")));
+  for (const j of rows.slice(0, 200)) list.append(card(j));
+}
+function fmtWhen(iso){
+  const d = new Date(iso); if (isNaN(d)) return "";
+  const tz = { timeZone: "Europe/London" }, day = x => x.toLocaleDateString("en-CA", tz);
+  const today = day(new Date()), yest = day(new Date(Date.now() - 864e5));
+  if (day(d) === today) return "today at " + d.toLocaleTimeString("en-GB", Object.assign({ hour: "2-digit", minute: "2-digit" }, tz));
+  if (day(d) === yest) return "yesterday";
+  return "on " + d.toLocaleDateString("en-GB", Object.assign({ day: "numeric", month: "short" }, tz));
+}
+function setQuery(v){
+  S.q = v; const i = $("job-q"); if (i.value !== v) i.value = v;
+  $("job-q-clear").hidden = !v;
+  renderFeed();
+}
+$("job-q").addEventListener("input", e => setQuery(e.target.value));
+$("job-q").addEventListener("keydown", e => { if (e.key === "Escape" && S.q) { e.preventDefault(); setQuery(""); } });
+$("job-q-clear").addEventListener("click", () => { setQuery(""); $("job-q").focus(); });
+const PILL = { ready: ["go","Shortlisted"], ask: ["ask","Ask me"], new: ["new","New"], check: ["check","Check manually"], rejected: ["no","Rejected"], tracked: ["go","Tracked"], interview: ["ask","Interview"] };
+function card(j){
+  const b = bucket(j), [pc, pt] = PILL[b];
+  const facts = String(j.facts || "").split(" · ").filter(f => f && !/^(remote|hybrid|on-site|agency)$/i.test(f.trim()));
+  const el = h("article", { class: "job " + ({ ready: "go", ask: "ask", new: "new", check: "check", interview: "ask" }[b] || "") },
+    h("div", { class: "jt" }, h("div", { style: "min-width:0" }, h("h3", null, j.title), h("div", { class: "meta" }, j.company ? h("span", { class: "co" }, j.company) : null, j.location ? h("span", null, j.location) : null,
+        j.source ? h("span", { class: "src" }, j.source) : null,
+        b === "ready" && shortWhen(j).length > 10 ? h("span", { class: "when" }, "Shortlisted " + fmtWhen(shortWhen(j))) : null)),
+      h("div", { class: "side" }, h("span", { class: "pill " + pc }, j.status || pt),
+        b === "new" && j.link ? h("a", { class: "open", href: j.link, target: "_blank", rel: "noopener" }, "Open ad") : null)),
+    (facts.length || j._clash.length) ? h("div", { class: "facts" }, facts.map(f => h("span", { class: j._clash.some(c => f.toLowerCase().includes(c)) ? "clash" : null }, f))) : null,
+    j.reason && b === "ask" ? (splitQuestion(j.reason).context ? h("p", { class: "reason" }, splitQuestion(j.reason).context) : null) : null,
+    j.reason && b !== "rejected" && b !== "ask" ? h("p", { class: "reason" }, j.reason) : null,
+    j.reason && b === "rejected" ? h("details", { class: "more" }, h("summary", null, "Why it was rejected"), h("div", { class: "adtext" }, j.reason)) : null,
+    b === "new" ? null : h("div", { class: "acts" },
+      j.link && h("a", { class: "btn", href: j.link, target: "_blank", rel: "noopener" }, "Open ad"),
+      b === "ask" ? h("button", { class: "btn primary", onclick: () => safeWrite("Feed", j._id, { decision: "Shortlisted" }, "Shortlisted. Its CV is made on the next Tailor CVs run.").then(() => { if (bucket(j) === "ready") markShortlisted(j, true); if (usesSheet()) addToJobsTab(j); }) }, "Shortlist it") : null,
+      b === "ask" ? h("button", { class: "btn", onclick: () => safeWrite("Feed", j._id, { decision: "Rejected", reason: (j.reason ? j.reason + " · " : "") + "Rejected by you" }, "Rejected.") }, "Reject it") : null,
+      (b === "ready" || b === "tracked" || b === "interview") ? cvButton(j) : null,
+      b === "ask" ? askControl(j) : null,
+      b === "check" ? h("button", { class: "btn primary", onclick: () => safeWrite("Feed", j._id, { decision: "Shortlisted", reason: (j.reason ? j.reason + " · " : "") + "Shortlisted by you after checking" }, "Shortlisted. Its CV is made on the next Tailor CVs run.").then(() => { if (bucket(j) === "ready") markShortlisted(j, true); if (usesSheet()) addToJobsTab(j); }) }, "Shortlist it") : null,
+      b === "check" ? h("button", { class: "btn", onclick: () => safeWrite("Feed", j._id, { decision: "Rejected", reason: (j.reason ? j.reason + " · " : "") + "Rejected by you after checking" }, "Rejected.") }, "Reject it") : null,
+      // Changed your mind about a rejected job: move it to the shortlist (and clear a "Not for me" status, which would keep it in Rejected).
+      b === "rejected" ? h("button", { class: "btn primary", onclick: () => safeWrite("Feed", j._id, Object.assign({ decision: "Shortlisted", reason: (j.reason ? j.reason + " · " : "") + "Shortlisted by you after it was rejected" }, j.status === "Not for me" ? { status: "" } : {}), "Shortlisted. Its CV is made on the next Tailor CVs run.").then(() => { if (bucket(j) === "ready") markShortlisted(j, true); if (usesSheet()) addToJobsTab(j); }) }, "Shortlist it") : null,
+      (b === "ready" || b === "tracked" || b === "interview") && h("select", { id: "st-" + j._id, "aria-label": "Status for " + j.title, onchange: e => {
+          const v = e.target.value; const f = { status: v }; if (v === "Applied" && !j.dateApplied) f.dateApplied = todayISO();
+          safeWrite("Feed", j._id, f, v ? "Marked " + v + "." : "Status cleared.").then(() => { if (usesSheet()) markAppliedInJobsTab(j, !!v); });
+        } }, STATUSES.map(s => h("option", { value: s, selected: (j.status || "") === s ? "" : null }, s || "Status…"))),
+      b === "ready" ? h("button", { class: "btn remove", onclick: () => safeWrite("Feed", j._id, { decision: "Rejected", reason: (j.reason ? j.reason + " · " : "") + "Removed from the shortlist by you" }, "Removed from the shortlist. It's in Jobs under Rejected.").then(() => { if (bucket(j) !== "ready") markShortlisted(j, false); if (usesSheet()) removeFromJobsTab(j); }) }, "Remove") : null),
+    (j.requirements || j.advert) && h("details", { class: "more" }, h("summary", null, j.requirements ? "Requirements" : "Advert"),
+      h("div", { class: "adtext" }, j.requirements || j.advert)));
+  return el;
+}
+/* The Shortlist step writes its question inside the Reason. Pull the question(s) out so the card can show the
+   context as text and the question above the answer dropdown. */
+function splitQuestion(reason){
+  const r = String(reason || "").trim();
+  const parts = r.match(/[^.?!]+(?:[.?!]+|$)(?:\s*\([^)]*\))?/g) || [];
+  const qs = parts.filter(x => /\?\s*(\([^)]*\))?\s*$/.test(x.trim()));
+  if (!qs.length) return { context: r, question: "Do you want to apply for this job?" };
+  const keep = parts.filter(x => !qs.includes(x)).join("").trim();
+  const tails = qs.map(q => (q.match(/\(([^)]*)\)\s*$/) || [])[1]).filter(Boolean);   // "(Hybrid London; Train …)" after a question stays as context
+  const question = qs.map(q => q.replace(/\s*\([^)]*\)\s*$/, "").trim()).join(" ")
+    .replace(/^Does she /, "Do you ").replace(/\bshe\b/g, "you").replace(/\bher\b/g, "your");   // older questions were written in the third person
+  return { context: [keep, tails.join("; ")].filter(Boolean).join(" ").trim(), question };
+}
+/* ---------------- Ask me answers ----------------
+   Your answer only teaches Sift about you: it is kept in the job's Note and added to About Me. The job stays put.
+   Every answer is also turned into a rule in the About me doc, so later jobs are judged with it. */
+function cvLink(cv){
+  const v = String(cv || "").trim();
+  if (/^https:\/\//.test(v)) return v;
+  if (/^[\w-]{20,}$/.test(v)) return "https://drive.google.com/file/d/" + v + "/view";   // a bare Drive file id
+  return "";
+}
+function cvButton(j){
+  const url = cvLink(j.cv);
+  if (url) return h("a", { class: "btn primary", href: url, target: "_blank", rel: "noopener", title: "Open your CV for this job in Google Drive" },
+    "Tailored CV", j.cvScore ? h("span", { class: "score", style: "margin-left:6px;color:inherit;opacity:.85" }, j.cvScore) : null);
+  return h("button", { class: "btn", "aria-disabled": "true", title: "Not made yet: press Tailor CVs",
+    onclick: () => toast("This job's CV isn't made yet. Press Tailor CVs and it appears here.", 1) }, "Tailored CV");
+}
+function askControl(j){
+  const typing = S.askText[j._id] !== undefined;
+  return h("div", { class: "answer" },
+    h("label", { class: "k q", for: "ans-" + j._id }, splitQuestion(j.reason).question),
+    /Answer: /.test(j.note || "") ? h("p", { class: "hint", style: "flex:1 1 100%" }, "You answered: " + String(j.note).split("Answer: ").pop() + ". Saved to About Me.") : null,
+    h("select", { id: "ans-" + j._id, onchange: e => {
+        const v = e.target.value;
+        if (v === "yes") answerAsk(j, "Yes");
+        else if (v === "no") answerAsk(j, "No");
+        else if (v === "type") { S.askText[j._id] = ""; renderFeed(); setTimeout(() => { const t = $("anstext-" + j._id); if (t) t.focus(); }, 0); }
+        else { delete S.askText[j._id]; renderFeed(); }
+      } },
+      h("option", { value: "" }, "Choose…"), h("option", { value: "yes" }, "Yes"), h("option", { value: "no" }, "No"),
+      h("option", { value: "type", selected: typing ? "" : null }, "Write my own answer…")),
+    typing ? h("div", { class: "anstext" },
+      h("textarea", { id: "anstext-" + j._id, "aria-label": "Your answer to: " + (j.reason || ""), placeholder: "Type your answer", value: S.askText[j._id],
+        oninput: e => { S.askText[j._id] = e.target.value; } }),
+      h("button", { class: "btn primary", onclick: () => { const t = String(S.askText[j._id] || "").trim(); if (t) answerAsk(j, t); else toast("Type an answer first.", 1); } }, "Save answer")) : null);
+}
+async function answerAsk(j, answer){
+  const q = String(j.reason || "");
+  delete S.askText[j._id];
+  // The answer only teaches Sift about you: it's kept on the job and added to About Me. The job stays where it is;
+  // Shortlist it / Reject it decide what happens to it.
+  await safeWrite("Feed", j._id, { note: (j.note ? j.note + " · " : "") + "Answer: " + answer }, null);
+  await learnFrom(j, q, answer);
+  decideAnswered();
+}
+/* Hands-off: an answer starts Shortlist for the answered jobs (it decides them from the saved ad and, if any is
+   shortlisted, starts Tailor CVs). If a run is already going, starting another would look like Stop to it, so the
+   app leaves config/answers instead and the running task starts the answers run when it finishes. */
+async function decideAnswered(){
+  if (!S.isOwner || !S.db || !S.mcp || !(S.tasks && S.tasks.shortlist)) return;
+  try {
+    const d = await S.db.doc("config/running").get();
+    const r = d.exists ? d.data() : null;
+    if (r && Date.now() - Date.parse(r.startedAt || r.runId || 0) < 45 * 60 * 1000) {
+      await S.db.doc("config/answers").set({ pending: true, at: new Date().toISOString() });
+      toast("Sift will decide this job when the current run finishes, then tailor its CV if it's shortlisted.");
+      return;
+    }
+    await fire("shortlist", "Started by your Ask me answer. Answers only. Run id: ", true);
+    toast("Sift is deciding this job now, and will tailor its CV if it's shortlisted.");
+  } catch (e) {}
+}
+async function learnFrom(j, q, answer){
+  let rule = "";
+  if (S.sample) {
+    try {
+      const r = await S.sample.json(
+        "A job-search assistant asked a job seeker a question about one job, and they answered.\n" +
+        "Turn the answer into ONE short preference rule (one sentence, at most 30 words) that settles the same KIND of question for every future job, " +
+        "so they are never asked it again. Name the situation the question is about, not the company " +
+        "(e.g. \"When an ad asks for 2 years' PM experience, apply on the strength of my own product\", \"Happy to relocate abroad for a few months at the start\", \"No ERP or systems-onboarding roles\"). " +
+        "A bare Yes or No answers the question as asked: turn the question itself into the rule. Use only what the question and answer say; never invent a reason they didn't give.\n" +
+        'Reply with only JSON: {"rule": "..."}\n\n' +
+        "Job: " + j.title + " – " + j.company + "\nQuestion: " + q + "\nAnswer: " + answer, { modelTier: "quick" });
+      rule = r && typeof r.rule === "string" ? r.rule.trim() : "";
+    } catch (e) {}
+  }
+  if (!rule) rule = `Answered "${answer}" to: ${q}`;
+  const learned = (S.about && Array.isArray(S.about.learned) ? S.about.learned : []).concat([{ q, a: answer, rule, job: j.title + " – " + j.company, at: new Date().toISOString() }]);
+  try { await saveAbout({ learned }); toast("Saved to About Me: " + rule); } catch (e) {}
+}
+async function saveAbout(fields){
+  const ref = S.db.doc(P("about") + "/me");
+  const f = Object.assign({}, fields, { updatedAt: new Date().toISOString() });
+  if (S.about) await ref.update(f);
+  else await ref.set(Object.assign({ text: "", fitRules: "", learned: [] }, f));
+}
+
+/* ---------------- CV → About me doc ---------------- */
+const LIBS = {
+  pdf: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",
+  pdfWorker: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js",
+  docx: "https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js",
+};
+const loaded = {};
+function loadScript(src){
+  return loaded[src] || (loaded[src] = new Promise((ok, no) => { const t = document.createElement("script"); t.src = src; t.onload = ok; t.onerror = () => { delete loaded[src]; no(new Error("load")); }; document.head.append(t); }));
+}
+async function cvText(file){
+  const name = file.name.toLowerCase();
+  let text = "";
+  if (name.endsWith(".pdf")) {
+    await loadScript(LIBS.pdf);
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = LIBS.pdfWorker;
+    const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const c = await (await pdf.getPage(i)).getTextContent();
+      text += c.items.map(it => it.str + (it.hasEOL ? "\n" : " ")).join("") + "\n";
+    }
+  } else if (name.endsWith(".docx")) {
+    await loadScript(LIBS.docx);
+    text = (await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
+  } else if (/\.(txt|md)$/.test(name)) text = await file.text();
+  else throw new Error("type");
+  text = text.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  if (text.length < 200) throw new Error("empty");
+  return text;
+}
+function cvError(e){
+  return e && e.message === "type" ? "Sift reads PDF, Word (.docx) or text files. Try one of those, or paste your CV."
+       : e && e.message === "empty" ? "Sift couldn't find text in that file (it may be a scanned image). Try a Word file, or paste your CV."
+       : "Sift couldn't read that file. Try again, or paste your CV.";
+}
+/* Ask Claude to write the About me doc + fit rules from the CV and the answers. Uses only what's given. */
+async function writeAbout(cv, answers){
+  if (!S.sample) throw new Error("nosample");
+  const learned = (S.about && S.about.learned || []).map(l => "- " + l.rule).join("\n");
+  return S.sample.json(
+    "You are setting up a job seeker's profile for a job-search assistant. From their CV and answers below, write their About me doc and their fit rules.\n" +
+    "Use ONLY facts in the CV and answers. Never invent, guess or round anything. Keep employers, job titles, dates, degrees and grades exactly as written. UK English. Plain text: headings on their own line, '- ' for bullets, no other formatting.\n\n" +
+    "aboutMe: the full About me doc, the only source of facts for their tailored CVs, so keep every detail. Sections: Summary; Contact; Education; Work experience (each role with dates and what they did); Projects; Skills; Languages; Right to work; What I want; Deal-breakers.\n" +
+    "fitRules: numbered rules a reviewer applies to decide whether a job fits them: the roles; level and the most years of experience asked; work patterns, places and commute; visa and languages; the work they want (must-haves); always-reject deal-breakers; nice-to-haves; and when to ask them instead of deciding.\n" +
+    "facts: short values (one or two sentences) for Degree, Work experience, Product experience, Skills, Other languages, Security clearance; \"\" when the CV says nothing.\n\n" +
+    'Reply with only JSON: {"name": "...", "aboutMe": "...", "fitRules": "...", "facts": {"Degree": "...", "Work experience": "...", "Product experience": "...", "Skills": "...", "Other languages": "...", "Security clearance": "..."}}\n\n' +
+    "ANSWERS:\n" + Object.entries(answers).filter(([, v]) => v).map(([k, v]) => k + ": " + v).join("\n") +
+    (learned ? "\n\nTHINGS THEY TOLD US WHEN ANSWERING QUESTIONS ABOUT JOBS:\n" + learned : "") +
+    "\n\nCV:\n<<<\n" + cv.slice(0, 60000) + "\n>>>", { modelTier: "default" });
+}
+async function applyAbout(r, cv, cvName, answers){
+  if (!r || typeof r.aboutMe !== "string" || !r.aboutMe.trim()) throw new Error("shape");
+  await saveAbout({ text: r.aboutMe.trim(), fitRules: String(r.fitRules || "").trim(), cvName, cvText: cv.slice(0, 60000), cvUpdatedAt: new Date().toISOString() });
+  const writes = [];
+  if (r.name && !fieldValue("Me", "Name")) writes.push(["Me", "Name", r.name]);
+  for (const [k, v] of Object.entries(answers || {})) { const q = WELCOME_Q.find(x => x[1] === k); if (q && v) writes.push([q[0], k, v]); }
+  // facts from the CV: a new user's profile follows their CV; the owner's hand-kept sheet only gets empty ones filled
+  for (const [k, v] of Object.entries(r.facts || {})) if (typeof v === "string" && v.trim() && (!S.isOwner || !fieldValue("Me", k))) writes.push(["Me", k, v.trim()]);
+  for (const [tab, key, v] of writes) if (fieldValue(tab, key) !== v) await setField(tab, key, v, null, null);
+}
+function aiError(e){
+  return e && e.message === "nosample" ? "Writing your About me needs Claude. Open Sift in Claude and allow it to use Claude when asked."
+       : e && e.code === "not_granted" ? "Sift needs your permission to use Claude to write your About me. Try again and allow it."
+       : e && e.code === "rate_limited" ? "Claude is busy. Wait a minute and try again."
+       : "Something went wrong writing your About me. Try again.";
+}
+async function replaceCV(file){
+  S.cvBusy = "Reading " + file.name + "…"; renderMe();
+  try {
+    const cv = await cvText(file);
+    S.cvBusy = "Writing your About me doc and fit rules from your new CV… (about a minute)"; renderMe();
+    const answers = Object.fromEntries(WELCOME_Q.map(q => [q[1], fieldValue(q[0], q[1])]));
+    await applyAbout(await writeAbout(cv, answers), cv, file.name, null);
+    S.cvBusy = ""; toast("Your CV is replaced and your About me doc is rewritten from it.");
+  } catch (e) { S.cvBusy = ""; toast(e && e.message && ["type", "empty", "load"].includes(e.message) ? cvError(e) : aiError(e), 1); }
+  renderMe();
+}
+
+/* ---------------- welcome: first questions for a new user ---------------- */
+const WELCOME_Q = [
+  ["Search", "Roles", "text", "What jobs are you looking for?", "e.g. product manager, data analyst", true],
+  ["Search", "Places", "text", "Where do you want to work?", "e.g. United Kingdom, Remote (UK), London"],
+  ["Search", "Work patterns", "multi", "Which ways of working are OK?", ["remote", "hybrid", "on-site"]],
+  ["Search", "Level", "choice", "What level of job?", ["entry", "mid", "senior", "any"]],
+  ["Search", "Max years asked", "text", "Skip jobs that ask for more than how many years of experience?", "e.g. 2"],
+  ["Search", "Not these roles", "text", "Any job titles to avoid?", "e.g. sales, marketing"],
+  ["Me", "Home", "text", "Where do you live?", "e.g. Leicester, UK"],
+  ["Me", "Gets to the office by", "choice", "How do you get to an office?", ["Train only (no driving licence)", "Public transport", "Car", "Any way"]],
+  ["Me", "Right to work in UK", "choice", "Do you have the right to work in the UK?", ["Yes", "No"]],
+  ["Me", "Needs visa sponsorship", "choice", "Do you need visa sponsorship?", ["No", "Yes"]],
+  ["Me", "Fluent languages", "text", "Which languages are you fluent in?", "e.g. English, French"],
+  ["Me", "What I want to do", "long", "What do you want to do in your next job?", "The kind of work you enjoy and want more of"],
+  ["Me", "Deal-breakers", "long", "What rules a job out for you?", "e.g. no sales targets, no weekend shifts"],
+  ["Me", "Companies I like", "text", "What kinds of companies do you like?", "e.g. start-ups, healthcare, AI"],
+  ["Me", "Available", "text", "When can you start?", "e.g. Immediately"],
+];
+function needsWelcome(){ return false; }
+/* ---------------- About me doc on the About Me page ---------------- */
+function aboutCards(){
+  const A = S.about || {}, out = [];
+  const fileIn = h("input", { type: "file", id: "cv-replace", accept: ".pdf,.docx,.txt,.md", class: "sr", onchange: e => { const f = e.target.files[0]; if (f) replaceCV(f); } });
+  out.push(h("section", { class: "me-sec" }, h("h2", null, "Your CV"),
+    h("div", { class: "cvrow" },
+      h("div", null, A.cvName ? h("strong", null, A.cvName) : h("span", { class: "hint" }, "No CV uploaded yet."),
+        A.cvUpdatedAt ? h("div", { class: "hint" }, "Uploaded " + new Date(A.cvUpdatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })) : null),
+      S.cvBusy ? null : h("label", { class: "btn", for: "cv-replace" }, A.cvName ? "Replace CV" : "Upload CV", fileIn)),
+    S.cvBusy ? h("p", { class: "hint", role: "status" }, S.cvBusy) : h("p", { class: "hint" }, "Uploading a CV rewrites your About me doc and fit rules from it. What Sift learned from your answers is kept.")));
+  out.push(docCard("about-text", "Your About me doc", "Every fact your tailored CVs use comes from here.", "text",
+    S.isOwner && !A.text ? h("p", null, "Your CVs use your About me Google Doc. ", /^https:\/\//.test(fieldValue("Me", "Full facts for CVs")) ? h("a", { href: fieldValue("Me", "Full facts for CVs"), target: "_blank", rel: "noopener" }, "Open it") : null, " Upload a CV above to also keep one here.") : null));
+  out.push(docCard("about-fit", "Your fit rules", "How the Shortlist step decides whether a job fits you.", "fitRules",
+    S.isOwner && !A.fitRules ? h("p", null, "Your Shortlist step uses your Fit rules Google Doc. ", h("a", { href: "https://docs.google.com/document/d/YOUR_FIT_RULES_DOC_ID/edit", target: "_blank", rel: "noopener" }, "Open it")) : null));
+  const L = Array.isArray(A.learned) ? A.learned : [];
+  out.push(h("section", { class: "me-sec" }, h("h2", null, "Learned from your answers"),
+    h("p", { class: "hint" }, "Each time you answer an Ask me question, Sift adds what it learned here, and the Shortlist step uses it on every job after that."),
+    L.length ? h("ul", { class: "learned" }, L.slice().reverse().map((l, ri) => { const i = L.length - 1 - ri;
+      return h("li", null, h("div", null, h("div", null, l.rule), h("div", { class: "hint" }, (l.job ? l.job + " · " : "") + "You said: " + l.a)),
+        h("button", { class: "btn quiet", "aria-label": "Remove: " + l.rule, onclick: () => saveAbout({ learned: L.filter((_, k) => k !== i) }).then(() => toast("Removed.")) }, "Remove")); }))
+      : h("p", { class: "hint" }, "Nothing yet.")));
+  return out;
+}
+function docCard(id, title, help, field, instead){
+  const A = S.about || {}, val = String(A[field] || ""), editing = S.editing === id;
+  if (instead) return h("section", { class: "me-sec" }, h("h2", null, title), instead);
+  return h("section", { class: "me-sec" },
+    h("div", { class: "sec-head" }, h("h2", null, title), !editing && val ? h("button", { class: "btn quiet", onclick: () => { S.editing = id; S.draft = val; renderMe(); } }, "Edit") : null),
+    h("p", { class: "hint" }, help),
+    editing
+      ? h("div", { class: "anstext" }, h("textarea", { class: "doctext", "aria-label": title, value: S.draft, oninput: e => { S.draft = e.target.value; } }),
+          h("div", { class: "row-btns" }, h("button", { class: "btn quiet", onclick: () => { S.editing = null; renderMe(); } }, "Cancel"),
+            h("button", { class: "btn primary", onclick: async () => { try { await saveAbout({ [field]: S.draft }); S.editing = null; toast("Saved."); renderMe(); } catch (e) { toast("Couldn't save. Try again.", 1); } } }, "Save")))
+      : val ? h("div", { class: "doctext", tabindex: "0" }, val) : h("p", { class: "hint" }, "Upload your CV to create this."));
+}
+
+/* ---------------- Me page ----------------
+   Every field is one row of the Me or Search table (Fact | Value | Used for), the same shape as the sheet's tabs. */
+const ME_PAGE = [
+  ["About you", "Who you are and how you get to work. Used for the train check, visa and language rules.", [
+    ["Me", "Name", "text", "Your profile and CVs"],
+    ["Me", "Home", "text", "Train check for hybrid and on-site roles", "e.g. Leicester, UK"],
+    ["Me", "Gets to the office by", "choice", "Train check", ["Train only (no driving licence)", "Public transport", "Car", "Any way"]],
+    ["Me", "Right to work in UK", "text", "Shortlist", "e.g. Yes (British citizen)"],
+    ["Me", "Needs visa sponsorship", "choice", "Yes = jobs that say they can't sponsor are dropped", ["No", "Yes"]],
+    ["Me", "Fluent languages", "text", "Jobs that require another fluent language are dropped", "e.g. English, Arabic"],
+    ["Me", "Other languages", "text", "Shortlist"],
+    ["Me", "Security clearance", "choice", "Jobs needing clearance you don't have are rejected", ["No", "SC", "DV", "Other"]],
+    ["Me", "Available", "text", "Applications", "e.g. Immediately"]]],
+  ["What you're looking for", "These decide what Collect searches for and what stays in your feed.", [
+    ["Search", "Roles", "text", "The role search bar on your feed", "e.g. product manager, APM"],
+    ["Search", "Not these roles", "long", "Titles containing any of these are dropped before review"],
+    ["Search", "Places", "text", "Where to look", "e.g. United Kingdom, Remote (UK), Remote (Europe)"],
+    ["Search", "Work patterns", "multi", "Jobs that clearly state another pattern are dropped", ["remote", "hybrid", "on-site"]],
+    ["Search", "Level", "choice", "entry = senior, lead, principal, head, director and staff titles are dropped", ["entry", "mid", "senior", "any"]],
+    ["Search", "Max years asked", "text", "Jobs asking for more years of experience than this are dropped", "e.g. 2"],
+    ["Search", "Sources", "text", "Where Collect searches", null, "owner"],
+    ["Search", "Daily budget (USD)", "text", "Most the company-sites search spends per Collect", null, "owner"],
+    ["Search", "Target companies", "long", "Collect checks these companies' own career pages on every run", "e.g. Monzo, Wise, Deliveroo", "owner"]]],
+  ["Your background", "What the shortlist checks a job's essential requirements against.", [
+    ["Me", "Degree", "text", "Shortlist"],
+    ["Me", "Work experience", "long", "Shortlist"],
+    ["Me", "Product experience", "long", "Shortlist", "Projects or products you've built"],
+    ["Me", "Skills", "long", "Shortlist: essential-requirements check"]]],
+  ["What matters to you", "How the shortlist judges whether a job is right for you.", [
+    ["Me", "What I want to do", "long", "Shortlist: the main fit test"],
+    ["Me", "Companies I like", "text", "Shortlist"],
+    ["Me", "Deal-breakers", "long", "Shortlist: jobs with these are rejected"]]],
+  ["Facts for your CVs", "CVs only ever use facts from your About me doc, never anything invented.", [
+    ["Me", "Full facts for CVs", "link", "About me Google Doc: the source of facts for your CVs", null, "owner"]]],
+];
+function fieldValue(tab, key){ const d = kv(tab === "Search" ? "search" : "me")[fold(key).trim()]; return d ? String(d.value || "") : ""; }
+function renderMe(){
+  const page = $("page-me"); page.replaceChildren();
+  const filled = ME_PAGE.flatMap(s => s[2]).filter(f => fieldValue(f[0], f[1])).length;
+  page.append(h("div", { class: "me-page" },
+    h("div", { class: "me-head" }, h("div", { class: "sec-head" }, h("h1", null, "About Me"),
+      h("a", { class: "btn primary", href: "https://docs.google.com/spreadsheets/d/" + (S.sheetId || SHEET_ID_DEFAULT) + "/edit", target: "_blank", rel: "noopener" }, "Open my Google Sheet")),
+      h("p", { class: "hint" }, S.isOwner
+        ? "Your facts and what you're looking for, saved in Sift. Sift uses them to filter your feed, judge every job and write your CVs. Click any value to change it."
+        : "Tell Sift about yourself. It uses this to collect jobs for you, filter your feed, judge every job and write your CVs. Only you and Sift's owner, whose tasks do the searching, can see it."),
+      h("p", { class: "hint" }, `${filled} fields filled in.`)),
+    aboutCards(),
+    ME_PAGE.map(([title, help, fields]) => {
+      const shown = fields.filter(f => !f[5] || (f[5] === "owner") === !!S.isOwner);
+      if (!shown.length) return null;
+      return h("section", { class: "me-sec" }, h("h2", null, title), h("p", { class: "hint" }, help), shown.map(meField));
+    })));
+}
+function meField([tab, key, type, used, extra]){
+  const id = "me-" + slug(key), value = fieldValue(tab, key), editing = S.editing === id;
+  const save = v => { S.editing = null; v = String(v).trim(); if (v !== value) setField(tab, key, v, "Saved.", used); renderMe(); };
+  let input;
+  if (type === "choice") {
+    input = h("select", { id, onchange: e => save(e.target.value) }, [h("option", { value: "" }, "Choose…"), ...extra.map(o => h("option", { value: o, selected: fold(value).startsWith(fold(o).slice(0, 4)) ? "" : null }, o))]);
+    return h("div", { class: "field" }, h("div", null, h("label", { class: "k", for: id }, key), h("div", { class: "u" }, used)), input);
+  }
+  if (type === "multi") {
+    const cur = splitList(value).map(x => x.toLowerCase());
+    return h("div", { class: "field" }, h("div", null, h("span", { class: "k" }, key), h("div", { class: "u" }, used)),
+      h("div", { class: "opts", role: "group", "aria-label": key }, extra.map(o => h("label", null,
+        h("input", { type: "checkbox", id: id + "-" + o, checked: cur.includes(o), onchange: e => { const next = extra.filter(x => x === o ? e.target.checked : cur.includes(x)); setField(tab, key, next.join(", "), "Saved.", used); } }), o))));
+  }
+  if (type === "link") {
+    return h("div", { class: "field" }, h("div", null, h("span", { class: "k" }, key), h("div", { class: "u" }, used)),
+      /^https:\/\//.test(value) ? h("a", { href: value, target: "_blank", rel: "noopener" }, "Open your About me doc") : h("span", { class: "v empty" }, "Not set"));
+  }
+  const body = editing
+    ? (type === "long" ? h("textarea", { id, value, onblur: e => save(e.target.value), onkeydown: e => { if (e.key === "Escape") { S.editing = null; renderMe(); } } })
+                       : h("input", { type: "text", id, value, placeholder: extra || "", onblur: e => save(e.target.value), onkeydown: e => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") { S.editing = null; renderMe(); } } }))
+    : h("div", { class: "v" + (value ? "" : " empty"), tabindex: "0", role: "button", "aria-label": "Edit " + key,
+        onclick: () => { S.editing = id; renderMe(); setTimeout(() => { const el = $(id); if (el) { el.focus(); el.selectionStart = el.value.length; } }, 0); },
+        onkeydown: e => { if (e.key === "Enter") e.currentTarget.click(); } }, value || (extra ? extra : "Add"));
+  return h("div", { class: "field" }, h("div", null, h("label", { class: "k", for: id }, key), h("div", { class: "u" }, used)), body);
+}
+
+render();
+})();
+</script>
+
+</body></html>
